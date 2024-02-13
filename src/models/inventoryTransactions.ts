@@ -2,7 +2,7 @@ import { model, Schema, Document, SchemaTypes } from 'mongoose'
 
 export enum TransactionType {
   BUY = 'BUY',
-  SELL = 'SELL'
+  SELL = 'SELL',
 }
 export interface IInventoryTransaction extends Document {
   product: string
@@ -58,6 +58,9 @@ const inventorySchema = new Schema({
   }
 })
 
-const InventoryTransaction = model<IInventoryTransaction>('inventoryTransaction', inventorySchema)
+const InventoryTransaction = model<IInventoryTransaction>(
+  'inventoryTransaction',
+  inventorySchema
+)
 
 export default InventoryTransaction

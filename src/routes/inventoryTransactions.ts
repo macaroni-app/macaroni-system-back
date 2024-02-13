@@ -3,6 +3,8 @@ import { RequestHandler, Router } from 'express'
 import inventoryTransactionController from '../controllers/inventoryTransactions'
 
 import verifyToken from '../middlewares/validate-token'
+import { schemaValidator } from '../middlewares/schemaValidator'
+import { CreateInventoryTransactionSchema, UpdateInventoryTransactionSchema } from '../schemas/inventoryTransactions'
 
 const inventoryTransactionRouter = Router()
 
@@ -13,10 +15,10 @@ inventoryTransactionRouter.get('/', verifyToken as RequestHandler, inventoryTran
 inventoryTransactionRouter.get('/:id', verifyToken as RequestHandler, inventoryTransactionController.getOne as RequestHandler)
 
 // POST - http://localhost:3000/api/v1/inventoryTransactions
-inventoryTransactionRouter.post('/', verifyToken as RequestHandler, inventoryTransactionController.store as RequestHandler)
+inventoryTransactionRouter.post('/', [verifyToken as RequestHandler, schemaValidator(CreateInventoryTransactionSchema)], inventoryTransactionController.store as RequestHandler)
 
 // PUT - http://localhost:3000/api/v1/inventoryTransactions/:id
-inventoryTransactionRouter.put('/:id', verifyToken as RequestHandler, inventoryTransactionController.update as RequestHandler)
+inventoryTransactionRouter.put('/:id', [verifyToken as RequestHandler, schemaValidator(UpdateInventoryTransactionSchema)], inventoryTransactionController.update as RequestHandler)
 
 // PUT - http://localhost:3000/api/v1/inventoryTransactions
 // baseProductsRouter.put('/', verifyToken as RequestHandler, productsController.updateMany as RequestHandler)

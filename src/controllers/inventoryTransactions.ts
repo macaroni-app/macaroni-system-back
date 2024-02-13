@@ -1,4 +1,3 @@
-import { z } from 'zod'
 import { Request, Response } from 'express'
 import { RequestExt } from '../middlewares/validate-token'
 import { inventoryTransactionService } from '../services/inventoryTransactions'
@@ -50,20 +49,6 @@ const inventoryTransactionController = {
         status: 400,
         isStored: false,
         message: MISSING_FIELDS_REQUIRED
-      })
-    }
-
-    const TransactionTypeSchema = z.enum(['SELL', 'BUY'])
-
-    try {
-      // Intentar validar el tipo de transacción
-      TransactionTypeSchema.parse(req.body.transactionType)
-    } catch (error) {
-      // Si hay un error, significa que el tipo de transacción no es válido
-      return res.status(400).json({
-        status: 400,
-        isStored: false,
-        message: 'Mal formado'
       })
     }
 
