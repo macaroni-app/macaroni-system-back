@@ -1,22 +1,23 @@
 import { FilterQuery } from 'mongoose'
-import Inventory, { IInventory } from '../models/inventories'
+import Inventory from '../models/inventories'
+import { InventoryType } from '../schemas/inventories'
 
 export const inventoryService = {
-  getAll: (options: FilterQuery<IInventory>) => {
+  getAll: (options: FilterQuery<InventoryType>) => {
     try {
       return Inventory.find({ ...options }).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
   },
-  getOne: (options: FilterQuery<IInventory> | undefined) => {
+  getOne: (options: FilterQuery<InventoryType> | undefined) => {
     try {
       return Inventory.findOne({ ...options })
     } catch (error) {
       return error
     }
   },
-  store: (newInventory: IInventory) => {
+  store: (newInventory: InventoryType) => {
     try {
       return Inventory.create(newInventory)
     } catch (error) {
@@ -30,13 +31,14 @@ export const inventoryService = {
       return error
     }
   },
-  update: async (id: string, newInventoryData: IInventory) => {
+  update: async (id: string, newInventoryData: InventoryType) => {
     try {
-      const inventory = await Inventory.findOne({ _id: id }) as IInventory
+      const inventory = await Inventory.findOne({ _id: id }) as InventoryType
       inventory.product = newInventoryData?.product
       inventory.quantityAvailable = newInventoryData?.quantityAvailable
 
-      return await inventory.save()
+      // return await inventory.save()
+      return await Inventory.updateOne({ _id: id }, { $set: { ...inventory } })
     } catch (error) {
       return error
     }

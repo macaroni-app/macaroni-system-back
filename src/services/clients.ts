@@ -1,22 +1,23 @@
 import { FilterQuery } from 'mongoose'
-import Client, { IClient } from '../models/clients'
+import Client from '../models/clients'
+import { ClientType } from '../schemas/clients'
 
 export const clientService = {
-  getAll: (options: FilterQuery<IClient>) => {
+  getAll: (options: FilterQuery<ClientType>) => {
     try {
       return Client.find({ ...options }, ['name']).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
   },
-  getOne: (options: FilterQuery<IClient> | undefined) => {
+  getOne: (options: FilterQuery<ClientType> | undefined) => {
     try {
       return Client.findOne({ ...options })
     } catch (error) {
       return error
     }
   },
-  store: (newClient: IClient) => {
+  store: (newClient: ClientType) => {
     try {
       return Client.create(newClient)
     } catch (error) {
@@ -30,12 +31,13 @@ export const clientService = {
       return error
     }
   },
-  update: async (id: string, newClientData: IClient) => {
+  update: async (id: string, newClientData: ClientType) => {
     try {
-      const client = await Client.findOne({ _id: id }) as IClient
+      const client = await Client.findOne({ _id: id }) as ClientType
       client.name = newClientData.name
 
-      return await client.save()
+      return await Client.updateOne({ _id: id }, { $set: { ...client } })
+      // return await client.save()
     } catch (error) {
       return error
     }

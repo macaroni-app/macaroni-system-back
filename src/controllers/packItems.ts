@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
-import { RequestExt } from '../middlewares/validate-token'
 import { packItemsService } from '../services/packItems'
-import { IPackItem } from '../models/packItems'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { CreatePackItemsBodyType, DeletePackItemsParamsType, GetPackItemsParamsType, GetPackItemsQueryType, PackItemsType, UpdatePackItemsBodyType, UpdatePackItemsParamsType } from '../schemas/packItems'
 
 const packItemsController = {
-  getAll: async (req: Request, res: Response): Promise<Response> => {
+  getAll: async (req: Request<{}, {}, {}, GetPackItemsQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
     const filters = {
@@ -14,7 +13,7 @@ const packItemsController = {
       }
     }
 
-    const packItems: IPackItem[] = await packItemsService.getAll((id !== null && id !== undefined) ? filters : {})
+    const packItems: PackItemsType[] = await packItemsService.getAll((id !== null && id !== undefined) ? filters : {})
 
     return res.status(200).json({
       status: 200,
@@ -22,10 +21,10 @@ const packItemsController = {
       data: packItems
     })
   },
-  getOne: async (req: Request, res: Response): Promise<Response> => {
+  getOne: async (req: Request<GetPackItemsParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
-    const packItem: IPackItem = await packItemsService.getOne({ _id: id })
+    const packItem: PackItemsType = await packItemsService.getOne({ _id: id })
 
     if (packItem === null || packItem === undefined) {
       return res.status(404).json({
@@ -39,7 +38,7 @@ const packItemsController = {
       data: packItem
     })
   },
-  store: async (req: RequestExt, res: Response): Promise<Response> => {
+  store: async (req: Request<{}, {}, CreatePackItemsBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.product === null || req.body.product === undefined) ||
       (req.body.pack === null || req.body.pack === undefined) ||
@@ -56,7 +55,7 @@ const packItemsController = {
     packItemToStore.createdBy = req?.user?.id
     packItemToStore.updatedBy = req?.user?.id
 
-    const packItemStored: IPackItem = await packItemsService.store(packItemToStore)
+    const packItemStored: PackItemsType = await packItemsService.store(packItemToStore)
 
     return res.status(201).json({
       status: 201,
@@ -64,7 +63,7 @@ const packItemsController = {
       data: packItemStored
     })
   },
-  delete: async (req: Request, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeletePackItemsParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const packItemDeleted = await packItemsService.delete(id)
@@ -83,7 +82,7 @@ const packItemsController = {
       data: packItemDeleted
     })
   },
-  update: async (req: Request, res: Response): Promise<Response> => {
+  update: async (req: Request<UpdatePackItemsParamsType, {}, UpdatePackItemsBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.product === null || req.body.product === undefined) ||
       (req.body.pack === null || req.body.pack === undefined) ||

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
-import { RequestExt } from '../middlewares/validate-token'
 import { inventoryTransactionService } from '../services/inventoryTransactions'
 import { IInventoryTransaction } from '../models/inventoryTransactions'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { CreateInventoryTransactionBodyType, DeleteInventoryTransactionParamsType, GetInventoryTransactionParamsType, GetInventoryTransactionQueryType, InventoryTransactionType, UpdateInventoryTransactionBodyType, UpdateInventoryTransactionParamsType } from '../schemas/inventoryTransactions'
 
 const inventoryTransactionController = {
-  getAll: async (req: Request, res: Response): Promise<Response> => {
+  getAll: async (req: Request<{}, {}, {}, GetInventoryTransactionQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
     const filters = {
@@ -22,7 +22,7 @@ const inventoryTransactionController = {
       data: inventoryTransactions
     })
   },
-  getOne: async (req: Request, res: Response): Promise<Response> => {
+  getOne: async (req: Request<GetInventoryTransactionParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const inventoryTransaction: IInventoryTransaction = await inventoryTransactionService.getOne({ _id: id })
@@ -39,7 +39,7 @@ const inventoryTransactionController = {
       data: inventoryTransaction
     })
   },
-  store: async (req: RequestExt, res: Response): Promise<Response> => {
+  store: async (req: Request<{}, {}, CreateInventoryTransactionBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.product === null || req.body.product === undefined) ||
       (req.body.transactionType === null || req.body.transactionType === undefined) ||
@@ -56,7 +56,7 @@ const inventoryTransactionController = {
     inventoryTransactionToStore.createdBy = req?.user?.id
     inventoryTransactionToStore.updatedBy = req?.user?.id
 
-    const inventoryTransactionStored: IInventoryTransaction = await inventoryTransactionService.store(inventoryTransactionToStore)
+    const inventoryTransactionStored: InventoryTransactionType = await inventoryTransactionService.store(inventoryTransactionToStore)
 
     return res.status(201).json({
       status: 201,
@@ -64,7 +64,7 @@ const inventoryTransactionController = {
       data: inventoryTransactionStored
     })
   },
-  delete: async (req: Request, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeleteInventoryTransactionParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const inventoryTransactionDeleted = await inventoryTransactionService.delete(id)
@@ -83,7 +83,7 @@ const inventoryTransactionController = {
       data: inventoryTransactionDeleted
     })
   },
-  update: async (req: Request, res: Response): Promise<Response> => {
+  update: async (req: Request<UpdateInventoryTransactionParamsType, {}, UpdateInventoryTransactionBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.product === null || req.body.product === undefined) ||
       (req.body.transactionType === null || req.body.transactionType === undefined) ||
@@ -112,10 +112,20 @@ const inventoryTransactionController = {
 
     const inventoryTransactionUpdated = await inventoryTransactionService.update(id, newInventoryTransactionData)
 
+    if (inventoryTransactionUpdated.acknowledged === false) {
+      return res.status(400).json({
+        status: 400,
+        isUpdated: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
     return res.status(200).json({
       status: 200,
       isUpdated: true,
-      data: inventoryTransactionUpdated
+      data: {
+        _id: id,
+        ...newInventoryTransactionData
+      }
     })
   }
 }

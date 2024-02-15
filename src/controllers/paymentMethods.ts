@@ -1,11 +1,10 @@
 import { Response, Request } from 'express'
-import { IMethodPayment } from '../models/paymentMethods'
-import { RequestExt } from '../middlewares/validate-token'
 import { methodPaymentService } from '../services/paymentMethods'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { CreateMethodPaymentsBodyType, DeleteMethodPaymentsParamsType, GetMethodPaymentsParamsType, GetMethodPaymentsQueryType, MethodPaymentsType, UpdateMethodPaymentsBodyType, UpdateMethodPaymentsParamsType } from '../schemas/methodPayments'
 
 const methodPaymentController = {
-  getAll: async (req: Request, res: Response): Promise<Response> => {
+  getAll: async (req: Request<{}, {}, {}, GetMethodPaymentsQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
     const filters = {
@@ -14,7 +13,7 @@ const methodPaymentController = {
       }
     }
 
-    const methodPayments: IMethodPayment[] = await methodPaymentService.getAll((id !== null && id !== undefined) ? filters : {})
+    const methodPayments: MethodPaymentsType[] = await methodPaymentService.getAll((id !== null && id !== undefined) ? filters : {})
 
     return res.status(200).json({
       status: 200,
@@ -22,10 +21,10 @@ const methodPaymentController = {
       data: methodPayments
     })
   },
-  getOne: async (req: Request, res: Response): Promise<Response> => {
+  getOne: async (req: Request<GetMethodPaymentsParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
-    const methodPayment = await methodPaymentService.getOne({ _id: id })
+    const methodPayment: MethodPaymentsType = await methodPaymentService.getOne({ _id: id })
 
     if (methodPayment === null || methodPayment === undefined) {
       return res.status(404).json({
@@ -39,7 +38,7 @@ const methodPaymentController = {
       data: methodPayment
     })
   },
-  store: async (req: RequestExt, res: Response): Promise<Response> => {
+  store: async (req: Request<{}, {}, CreateMethodPaymentsBodyType, {}>, res: Response): Promise<Response> => {
     if (req.body.name === null || req.body.name === undefined) {
       return res.status(400).json({
         status: 400,
@@ -52,7 +51,7 @@ const methodPaymentController = {
     methodPaymentToStore.createdBy = req?.user?.id
     methodPaymentToStore.updatedBy = req?.user?.id
 
-    const methodPaymentStored = await methodPaymentService.store(
+    const methodPaymentStored: MethodPaymentsType = await methodPaymentService.store(
       methodPaymentToStore
     )
 
@@ -62,7 +61,7 @@ const methodPaymentController = {
       data: methodPaymentStored
     })
   },
-  delete: async (req: Request, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeleteMethodPaymentsParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const methodPaymentDeleted = await methodPaymentService.delete(id)
@@ -81,7 +80,7 @@ const methodPaymentController = {
       data: methodPaymentDeleted
     })
   },
-  update: async (req: Request, res: Response): Promise<Response> => {
+  update: async (req: Request<UpdateMethodPaymentsParamsType, {}, UpdateMethodPaymentsBodyType, {}>, res: Response): Promise<Response> => {
     if (req.body.name === null || req.body.name === undefined) {
       return res.status(400).json({
         status: 400,

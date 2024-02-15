@@ -1,11 +1,11 @@
 import { Request, Response } from 'express'
-import { RequestExt } from '../middlewares/validate-token'
 import { productsService } from '../services/products'
 import { IProduct } from '../models/products'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { CreateProductBodyType, DeleteProductParamsType, GetProductParamsType, GetProductQueryType, ProductType, UpdateProductBodyType, UpdateProductParamsType } from '../schemas/products'
 
 const productsController = {
-  getAll: async (req: Request, res: Response): Promise<Response> => {
+  getAll: async (req: Request<{}, {}, {}, GetProductQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
     const filters = {
@@ -14,7 +14,7 @@ const productsController = {
       }
     }
 
-    const products: IProduct[] = await productsService.getAll((id !== null && id !== undefined) ? filters : {})
+    const products: ProductType[] = await productsService.getAll((id !== null && id !== undefined) ? filters : {})
 
     return res.status(200).json({
       status: 200,
@@ -22,7 +22,7 @@ const productsController = {
       data: products
     })
   },
-  getOne: async (req: Request, res: Response): Promise<Response> => {
+  getOne: async (req: Request<GetProductParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const product: IProduct = await productsService.getOne({ _id: id })
@@ -39,7 +39,7 @@ const productsController = {
       data: product
     })
   },
-  store: async (req: RequestExt, res: Response): Promise<Response> => {
+  store: async (req: Request<{}, {}, CreateProductBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.name === null || req.body.name === undefined) ||
       (req.body.costPrice === null || req.body.costPrice === undefined) ||
@@ -57,7 +57,7 @@ const productsController = {
     productToStore.createdBy = req?.user?.id
     productToStore.updatedBy = req?.user?.id
 
-    const productStored: IProduct = await productsService.store(productToStore)
+    const productStored: ProductType = await productsService.store(productToStore)
 
     return res.status(201).json({
       status: 201,
@@ -65,7 +65,7 @@ const productsController = {
       data: productStored
     })
   },
-  delete: async (req: Request, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeleteProductParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const productDeleted = await productsService.delete(id)
@@ -84,7 +84,7 @@ const productsController = {
       data: productDeleted
     })
   },
-  update: async (req: Request, res: Response): Promise<Response> => {
+  update: async (req: Request<UpdateProductParamsType, {}, UpdateProductBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.name === null || req.body.name === undefined) ||
       (req.body.costPrice === null || req.body.costPrice === undefined) ||
@@ -119,32 +119,32 @@ const productsController = {
       isUpdated: true,
       data: productsUpdated
     })
-  },
-  updateMany: async (req: Request, res: Response): Promise<Response> => {
-    if ((req.body.products === null || req.body.products === undefined) && req.body.products.length > 0) {
-      return res.status(400).json({
-        status: 400,
-        isStored: false,
-        message: MISSING_FIELDS_REQUIRED
-      })
-    }
-
-    const products = req.body.products as IProduct[]
-
-    // const baseProductsToUpdate = baseProducts.map((product) => {
-    //   return {
-    //     ...product
-    //   }
-    // })
-
-    const data = await productsService.updateMany(products)
-
-    return res.status(200).json({
-      status: 200,
-      isUpdated: true,
-      data
-    })
   }
+  // updateMany: async (req: Request, res: Response): Promise<Response> => {
+  //   if ((req.body.products === null || req.body.products === undefined) && req.body.products.length > 0) {
+  //     return res.status(400).json({
+  //       status: 400,
+  //       isStored: false,
+  //       message: MISSING_FIELDS_REQUIRED
+  //     })
+  //   }
+
+  //   const products = req.body.products as IProduct[]
+
+  //   // const baseProductsToUpdate = baseProducts.map((product) => {
+  //   //   return {
+  //   //     ...product
+  //   //   }
+  //   // })
+
+  //   const data = await productsService.updateMany(products)
+
+  //   return res.status(200).json({
+  //     status: 200,
+  //     isUpdated: true,
+  //     data
+  //   })
+  // }
 }
 
 export default productsController

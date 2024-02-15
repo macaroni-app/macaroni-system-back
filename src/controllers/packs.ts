@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
-import { RequestExt } from '../middlewares/validate-token'
 import { packsService } from '../services/packs'
-import { IPack } from '../models/packs'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { CreatePackBodyType, DeletePackParamsType, GetPackParamsType, GetPackQueryType, PackType, UpdatePackBodyType, UpdatePackParamsType } from '../schemas/packs'
 
 const packsController = {
-  getAll: async (req: Request, res: Response): Promise<Response> => {
+  getAll: async (req: Request<{}, {}, {}, GetPackQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
     const filters = {
@@ -14,7 +13,7 @@ const packsController = {
       }
     }
 
-    const packs: IPack[] = await packsService.getAll((id !== null && id !== undefined) ? filters : {})
+    const packs: PackType[] = await packsService.getAll((id !== null && id !== undefined) ? filters : {})
 
     return res.status(200).json({
       status: 200,
@@ -22,10 +21,10 @@ const packsController = {
       data: packs
     })
   },
-  getOne: async (req: Request, res: Response): Promise<Response> => {
+  getOne: async (req: Request<GetPackParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
-    const pack: IPack = await packsService.getOne({ _id: id })
+    const pack: PackType = await packsService.getOne({ _id: id })
 
     if (pack === null || pack === undefined) {
       return res.status(404).json({
@@ -39,7 +38,7 @@ const packsController = {
       data: pack
     })
   },
-  store: async (req: RequestExt, res: Response): Promise<Response> => {
+  store: async (req: Request<{}, {}, CreatePackBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.name === null || req.body.name === undefined) ||
       (req.body.costPrice === null || req.body.costPrice === undefined) ||
@@ -56,7 +55,7 @@ const packsController = {
     packToStore.createdBy = req?.user?.id
     packToStore.updatedBy = req?.user?.id
 
-    const packStored: IPack = await packsService.store(packToStore)
+    const packStored: PackType = await packsService.store(packToStore)
 
     return res.status(201).json({
       status: 201,
@@ -64,7 +63,7 @@ const packsController = {
       data: packStored
     })
   },
-  delete: async (req: Request, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeletePackParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const packDeleted = await packsService.delete(id)
@@ -83,7 +82,7 @@ const packsController = {
       data: packDeleted
     })
   },
-  update: async (req: Request, res: Response): Promise<Response> => {
+  update: async (req: Request<UpdatePackParamsType, {}, UpdatePackBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.name === null || req.body.name === undefined) ||
       (req.body.costPrice === null || req.body.costPrice === undefined) ||

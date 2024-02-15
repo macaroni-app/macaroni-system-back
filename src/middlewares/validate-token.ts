@@ -10,11 +10,7 @@ export interface UserPayload {
   id: string
 }
 
-export interface RequestExt extends Request {
-  user?: UserPayload
-}
-
-const verifyToken = async (req: RequestExt, res: Response, next: NextFunction): Promise<any> => {
+const verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   const authHeader = req.headers.authorization
 
   if (authHeader == null) return res.sendStatus(401)

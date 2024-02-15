@@ -1,11 +1,10 @@
 import { Request, Response } from 'express'
-import { IClient } from '../models/clients'
 import { clientService } from '../services/clients'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { RequestExt } from '../middlewares/validate-token'
+import { ClientType, CreateClientBodyType, DeleteClientParamsType, GetClientParamsType, GetClientQueryType, UpdateClientBodyType, UpdateClientParamsType } from '../schemas/clients'
 
 const clientsController = {
-  getAll: async (req: Request, res: Response): Promise<Response> => {
+  getAll: async (req: Request<{}, {}, {}, GetClientQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
     const filters = {
@@ -14,7 +13,7 @@ const clientsController = {
       }
     }
 
-    const clients: IClient[] = await clientService.getAll((id !== null && id !== undefined) ? filters : {})
+    const clients: ClientType[] = await clientService.getAll((id !== null && id !== undefined) ? filters : {})
 
     return res.status(200).json({
       status: 200,
@@ -22,10 +21,10 @@ const clientsController = {
       data: clients
     })
   },
-  getOne: async (req: Request, res: Response): Promise<Response> => {
+  getOne: async (req: Request<GetClientParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
-    const client: IClient = await clientService.getOne({ _id: id })
+    const client: ClientType = await clientService.getOne({ _id: id })
 
     if (client === null || client === undefined) {
       return res.status(404).json({
@@ -39,7 +38,7 @@ const clientsController = {
       data: client
     })
   },
-  store: async (req: RequestExt, res: Response): Promise<Response> => {
+  store: async (req: Request<{}, {}, CreateClientBodyType, {}>, res: Response): Promise<Response> => {
     if (req.body.name === null || req.body.name === undefined) {
       return res.status(400).json({
         status: 400,
@@ -52,7 +51,7 @@ const clientsController = {
     clientToStore.createdBy = req?.user?.id
     clientToStore.updatedBy = req?.user?.id
 
-    const clientStored = await clientService.store(clientToStore)
+    const clientStored: ClientType = await clientService.store(clientToStore)
 
     return res.status(201).json({
       status: 201,
@@ -60,7 +59,7 @@ const clientsController = {
       data: clientStored
     })
   },
-  delete: async (req: Request, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeleteClientParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const clientDeleted = await clientService.delete(id)
@@ -79,7 +78,7 @@ const clientsController = {
       data: clientDeleted
     })
   },
-  update: async (req: Request, res: Response): Promise<Response> => {
+  update: async (req: Request<UpdateClientParamsType, {}, UpdateClientBodyType, {}>, res: Response): Promise<Response> => {
     if (req.body.name === null || req.body.name === undefined) {
       return res.status(400).json({
         status: 400,

@@ -1,8 +1,9 @@
 import { FilterQuery } from 'mongoose'
-import MethodPayment, { IMethodPayment } from '../models/paymentMethods'
+import MethodPayment from '../models/paymentMethods'
+import { MethodPaymentsType } from '../schemas/methodPayments'
 
 export const methodPaymentService = {
-  getAll: (options: FilterQuery<IMethodPayment>) => {
+  getAll: (options: FilterQuery<MethodPaymentsType>) => {
     try {
       return MethodPayment.find({ ...options }, ['name']).sort({
         createdAt: -1
@@ -11,14 +12,14 @@ export const methodPaymentService = {
       return error
     }
   },
-  getOne: (options: FilterQuery<IMethodPayment> | undefined) => {
+  getOne: (options: FilterQuery<MethodPaymentsType> | undefined) => {
     try {
       return MethodPayment.findOne({ ...options })
     } catch (error) {
       return error
     }
   },
-  store: (newMethodPayment: IMethodPayment) => {
+  store: (newMethodPayment: MethodPaymentsType) => {
     try {
       return MethodPayment.create(newMethodPayment)
     } catch (error) {
@@ -32,12 +33,13 @@ export const methodPaymentService = {
       return error
     }
   },
-  update: async (id: string, newMethodPaymentData: IMethodPayment) => {
+  update: async (id: string, newMethodPaymentData: MethodPaymentsType) => {
     try {
-      const methodPayment = await MethodPayment.findOne({ _id: id }) as IMethodPayment
+      const methodPayment = await MethodPayment.findOne({ _id: id }) as MethodPaymentsType
       methodPayment.name = newMethodPaymentData.name
 
-      return await methodPayment.save()
+      // return await methodPayment.save()
+      return await MethodPayment.updateOne({ _id: id }, { $set: { ...methodPayment } })
     } catch (error) {
       return error
     }

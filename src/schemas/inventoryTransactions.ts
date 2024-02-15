@@ -1,52 +1,47 @@
 import { z } from 'zod'
 
+export const InventoryTransactionSchema = z.object({
+  product: z.string().min(24).max(24),
+  transactionType: z.enum(['BUY', 'SELL']),
+  affectedAmount: z.number().nonnegative(),
+  isDeleted: z.boolean().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
+  deletedAt: z.date().optional(),
+  createdBy: z.string().min(24).max(24).optional(),
+  updatedBy: z.string().min(24).max(24).optional()
+})
+
 export const CreateInventoryTransactionSchema = z.object({
-  body: z.object({
-    product: z.string({
-      errorMap: (_issue, _ctx) => {
-        return { message: 'product cannot be empty' }
-      }
-    })
-      .trim()
-      .min(24),
-    transactionType: z.enum(['BUY', 'SELL'], {
-      errorMap: (_issue, _ctx) => {
-        return { message: 'transactionType must be BUY or SELL' }
-      }
-    }),
-    affectedAmount: z.number({
-      errorMap: (_issue, _ctx) => {
-        return { message: 'affectedAmount must be greater than zero' }
-      }
-    }).nonnegative()
-  })
+  body: InventoryTransactionSchema
 })
 
 export const UpdateInventoryTransactionSchema = z.object({
-  body: z.object({
-    product: z.string({
-      errorMap: (_issue, _ctx) => {
-        return { message: 'product cannot be empty' }
-      }
-    })
-      .trim()
-      .min(24),
-    transactionType: z.enum(['BUY', 'SELL'], {
-      errorMap: (_issue, _ctx) => {
-        return { message: 'transactionType must be BUY or SELL' }
-      }
-    }),
-    affectedAmount: z.number({
-      errorMap: (_issue, _ctx) => {
-        return { message: 'affectedAmount must be greater than zero' }
-      }
-    }).nonnegative()
-  }),
+  body: InventoryTransactionSchema,
   params: z.object({
-    id: z.string({
-      errorMap: (_issue, _ctx) => {
-        return { message: 'id cannot be empty' }
-      }
-    }).min(24)
+    id: z.string().min(24).max(24)
   })
 })
+
+export const GetInventoryTransactionSchema = z.object({
+  params: z.object({
+    id: z.string().min(24).max(24).optional()
+  }),
+  query: z.object({
+    id: z.string().min(24).max(24).optional()
+  })
+})
+
+export const DeleteInventoryTransactionSchema = z.object({
+  params: z.object({
+    id: z.string().min(24).max(24)
+  })
+})
+
+export type InventoryTransactionType = z.infer<typeof InventoryTransactionSchema>
+export type CreateInventoryTransactionBodyType = z.infer<typeof CreateInventoryTransactionSchema>['body']
+export type UpdateInventoryTransactionBodyType = z.infer<typeof UpdateInventoryTransactionSchema>['body']
+export type UpdateInventoryTransactionParamsType = z.infer<typeof UpdateInventoryTransactionSchema>['params']
+export type GetInventoryTransactionParamsType = z.infer<typeof GetInventoryTransactionSchema>['params']
+export type GetInventoryTransactionQueryType = z.infer<typeof GetInventoryTransactionSchema>['query']
+export type DeleteInventoryTransactionParamsType = z.infer<typeof DeleteInventoryTransactionSchema>['params']

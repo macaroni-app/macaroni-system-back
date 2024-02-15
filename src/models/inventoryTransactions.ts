@@ -16,7 +16,7 @@ export interface IInventoryTransaction extends Document {
   updatedBy: string
 }
 
-const inventorySchema = new Schema({
+const inventoryTransactionSchema = new Schema({
   product: {
     type: SchemaTypes.ObjectId,
     ref: 'product',
@@ -60,7 +60,7 @@ const inventorySchema = new Schema({
 
 const InventoryTransaction = model<IInventoryTransaction>(
   'inventoryTransaction',
-  inventorySchema
+  inventoryTransactionSchema
 )
 
 export default InventoryTransaction
