@@ -13,11 +13,8 @@ import packsRouter from './routes/packs'
 import packItemsRouter from './routes/packItems'
 import inventoriesRouter from './routes/inventories'
 import inventoryTransactionRouter from './routes/inventoryTransactions'
-// import salesRouter from "./routes/sales.js";
-// import categoriesRouter from "./routes/categories.js";
+import salesRouter from './routes/sales'
 import clientsRouter from './routes/clients'
-// import saleDetailsRouter from "./routes/saleDetails.js";
-// import debtsRouter from "./routes/debts.js";
 import methodPaymentRouter from './routes/paymentMethods'
 
 // middlewares
@@ -46,10 +43,8 @@ app.use('/api/v1/packs', packsRouter)
 app.use('/api/v1/packItems', packItemsRouter)
 app.use('/api/v1/inventories', inventoriesRouter)
 app.use('/api/v1/inventoryTransactions', inventoryTransactionRouter)
-// app.use("/api/v1/sales", salesRouter);
-// app.use("/api/v1/categories", categoriesRouter);
+app.use('/api/v1/sales', salesRouter)
 app.use('/api/v1/clients', clientsRouter)
-// app.use("/api/v1/saleDetails", saleDetailsRouter);
 app.use('/api/v1/methodPayments', methodPaymentRouter)
 
 // app server listening
