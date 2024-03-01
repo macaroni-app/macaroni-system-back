@@ -1,8 +1,7 @@
 import { Request, Response } from 'express'
 import { salesService } from '../services/sales'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateSaleBodyType, GetSaleParamsType, GetSaleQueryType, SaleType, UpdateSaleBodyType, UpdateSaleParamsType } from '../schemas/sales'
-import { DeleteClientParamsType } from '../schemas/clients'
+import { CreateSaleBodyType, DeleteSaleParamsType, GetSaleParamsType, GetSaleQueryType, SaleType, UpdateSaleBodyType, UpdateSaleParamsType } from '../schemas/sales'
 
 const salesController = {
   getAll: async (req: Request<{}, {}, {}, GetSaleQueryType>, res: Response): Promise<Response> => {
@@ -65,7 +64,7 @@ const salesController = {
       data: saleStored
     })
   },
-  delete: async (req: Request<DeleteClientParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
+  delete: async (req: Request<DeleteSaleParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
     const { id } = req.params
 
     const saleDeleted = await salesService.delete(id)

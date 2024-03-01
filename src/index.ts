@@ -16,6 +16,7 @@ import inventoryTransactionRouter from './routes/inventoryTransactions'
 import salesRouter from './routes/sales'
 import clientsRouter from './routes/clients'
 import methodPaymentRouter from './routes/paymentMethods'
+import saleItemsRouter from './routes/saleItems'
 
 // middlewares
 import credentials from './middlewares/credentials'
@@ -44,6 +45,7 @@ app.use('/api/v1/packItems', packItemsRouter)
 app.use('/api/v1/inventories', inventoriesRouter)
 app.use('/api/v1/inventoryTransactions', inventoryTransactionRouter)
 app.use('/api/v1/sales', salesRouter)
+app.use('/api/v1/saleItems', saleItemsRouter)
 app.use('/api/v1/clients', clientsRouter)
 app.use('/api/v1/methodPayments', methodPaymentRouter)
 
