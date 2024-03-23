@@ -70,7 +70,7 @@ const usersController = {
         id: foundUser.id
       },
       ACCESS_TOKEN_SECRET,
-      { expiresIn: '15d' }
+      { expiresIn: '1d' }
     )
 
     const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? ''
