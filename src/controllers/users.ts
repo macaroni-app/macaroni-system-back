@@ -128,21 +128,25 @@ const usersController = {
     const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? ''
     const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
 
-    const decoded = jwt.verify(
-      refreshToken,
-      REFRESH_TOKEN_SECRET
-    ) as UserPayload
+    let decoded
 
-    if (foundUser.email !== decoded.email) {
-      return res.sendStatus(403)
+    try {
+      decoded = jwt.verify(
+        refreshToken,
+        REFRESH_TOKEN_SECRET
+      ) as UserPayload
+    } catch (error) {
+      if (foundUser.email !== decoded?.email) {
+        return res.sendStatus(403)
+      }
     }
 
     const accessToken = jwt.sign(
       {
-        firstName: decoded.firstName,
-        lastName: decoded.lastName,
-        email: decoded.email,
-        id: decoded.id
+        firstName: decoded?.firstName,
+        lastName: decoded?.lastName,
+        email: decoded?.email,
+        id: decoded?.id
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '15m' }
