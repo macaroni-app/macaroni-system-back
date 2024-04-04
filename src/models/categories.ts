@@ -1,11 +1,7 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
-export interface IProduct extends Document {
+
+export interface ICategory extends Document {
   name: string
-  costPrice: Number
-  wholesalePrice: Number
-  retailsalePrice: Number
-  type: string
-  category: string
   isDeleted: boolean
   isActive: boolean
   createdAt: Date
@@ -15,31 +11,9 @@ export interface IProduct extends Document {
   updatedBy: string
 }
 
-const productSchema = new Schema({
+const categorySchema = new Schema({
   name: {
     type: String,
-    required: true
-  },
-  costPrice: {
-    type: Number,
-    required: true
-  },
-  wholesalePrice: {
-    type: Number,
-    required: true
-  },
-  retailsalePrice: {
-    type: Number,
-    required: true
-  },
-  type: {
-    type: SchemaTypes.ObjectId,
-    ref: 'type',
-    required: true
-  },
-  category: {
-    type: SchemaTypes.ObjectId,
-    ref: 'category',
     required: true
   },
   createdAt: {
@@ -74,6 +48,6 @@ const productSchema = new Schema({
   }
 })
 
-const Product = model<IProduct>('product', productSchema)
+const Category = model<ICategory>('category', categorySchema)
 
-export default Product
+export default Category

@@ -36,38 +36,14 @@ export const productsService = {
       const product = await Product.findOne({ _id: id }) as ProductType
       product.name = newProductData?.name
       product.costPrice = newProductData?.costPrice
-      product.wholesalePrice = newProductData?.wholesalePrice
-      product.retailsalePrice = newProductData?.retailsalePrice
+      product.wholesalePrice = newProductData.wholesalePrice
+      product.retailsalePrice = newProductData.retailsalePrice
+      product.category = newProductData.category
+      product.type = newProductData.type
 
       return await Product.updateOne({ _id: id }, { $set: { ...product } })
     } catch (error) {
       return error
     }
   }
-  // updateMany: async (productsToUpdate: IProduct[]) => {
-  //   try {
-  //     const productIds = productsToUpdate?.map((product) => product.id)
-
-  //     const res = await Product.find({
-  //       _id: { $in: productIds }
-  //     })
-
-  //     const products: IProduct[] = []
-  //     res.forEach((productToUpdate) => {
-  //       productsToUpdate.forEach((product) => {
-  //         if (productToUpdate.id === product.id) {
-  //           products.push(productToUpdate)
-  //         }
-  //       })
-  //     })
-
-  //     let data
-  //     if (products.length > 0) {
-  //       data = await Product.bulkSave(products)
-  //     }
-  //     return data
-  //   } catch (error) {
-  //     return error
-  //   }
-  // }
 }

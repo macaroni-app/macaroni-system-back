@@ -3,6 +3,7 @@ import { model, Schema, Document, SchemaTypes } from 'mongoose'
 export interface IClient extends Document {
   name: string
   isDeleted: boolean
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date
@@ -30,6 +31,10 @@ const clientSchema = new Schema({
   isDeleted: {
     type: Boolean,
     default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
   createdBy: {
     type: SchemaTypes.ObjectId,

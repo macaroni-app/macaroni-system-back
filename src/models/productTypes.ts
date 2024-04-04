@@ -1,10 +1,9 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
 
-export interface IPackItem extends Document {
-  product: string
-  pack: string
-  quantity: Number
+export interface IProductType extends Document {
+  name: string
   isDeleted: boolean
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date
@@ -12,19 +11,9 @@ export interface IPackItem extends Document {
   updatedBy: string
 }
 
-const packItemSchema = new Schema({
-  product: {
-    type: SchemaTypes.ObjectId,
-    ref: 'product',
-    required: true
-  },
-  pack: {
-    type: SchemaTypes.ObjectId,
-    ref: 'pack',
-    required: true
-  },
-  quantity: {
-    type: Number,
+const productTypeSchema = new Schema({
+  name: {
+    type: String,
     required: true
   },
   createdAt: {
@@ -43,6 +32,10 @@ const packItemSchema = new Schema({
     type: Boolean,
     default: false
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   createdBy: {
     type: SchemaTypes.ObjectId,
     ref: 'user',
@@ -55,6 +48,6 @@ const packItemSchema = new Schema({
   }
 })
 
-const PackItem = model<IPackItem>('packItem', packItemSchema)
+const ProductType = model<IProductType>('productType', productTypeSchema)
 
-export default PackItem
+export default ProductType

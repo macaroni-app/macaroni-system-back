@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const ClientSchema = z.object({
   name: z.string().min(1),
   isDeleted: z.boolean().optional(),
+  isActive: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   deletedAt: z.date().optional(),

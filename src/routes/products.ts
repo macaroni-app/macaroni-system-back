@@ -3,8 +3,8 @@ import { RequestHandler, Router } from 'express'
 import productsController from '../controllers/products'
 
 import verifyToken from '../middlewares/validate-token'
-import { CreateProductSchema, UpdateProductParamsType, UpdateProductBodyType, UpdateProductSchema, DeleteProductSchema, DeleteProductParamsType, GetProductSchema } from '../schemas/products'
 import { schemaValidator } from '../middlewares/schemaValidator'
+import { CreateProductSchema, DeleteProductSchema, DeleteProductParamsType, GetProductSchema, UpdateProductParamsType, UpdateProductBodyType, UpdateProductSchema } from '../schemas/products'
 
 const productsRouter = Router()
 
@@ -19,9 +19,6 @@ productsRouter.post('/', [verifyToken as RequestHandler, schemaValidator(CreateP
 
 // PUT - http://localhost:3000/api/v1/products/:id
 productsRouter.put('/:id', [verifyToken as RequestHandler, schemaValidator(UpdateProductSchema)], productsController.update as RequestHandler<UpdateProductParamsType, {}, UpdateProductBodyType, {}>)
-
-// PUT - http://localhost:3000/api/v1/products
-// productsRouter.put('/', verifyToken as RequestHandler, productsController.updateMany as RequestHandler)
 
 // DELETE - http://localhost:3000/api/v1/products/:id
 productsRouter.delete('/:id', [verifyToken as RequestHandler, schemaValidator(DeleteProductSchema)], productsController.delete as RequestHandler<DeleteProductParamsType, {}, {}, {}>)

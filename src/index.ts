@@ -8,13 +8,15 @@ import './database'
 
 // import routes
 import usersRouter from './routes/users'
+import assetsRouter from './routes/assets'
 import productsRouter from './routes/products'
-import packsRouter from './routes/packs'
-import packItemsRouter from './routes/packItems'
+import productItemsRouter from './routes/productItems'
 import inventoriesRouter from './routes/inventories'
 import inventoryTransactionRouter from './routes/inventoryTransactions'
 import salesRouter from './routes/sales'
 import clientsRouter from './routes/clients'
+import categoriesRouter from './routes/categories'
+import productTypesRouter from './routes/productTypes'
 import methodPaymentRouter from './routes/paymentMethods'
 import saleItemsRouter from './routes/saleItems'
 
@@ -39,14 +41,16 @@ app.use(morgan('tiny'))
 
 // route middleware
 app.use('/api/v1/users', usersRouter)
+app.use('/api/v1/assets', assetsRouter)
 app.use('/api/v1/products', productsRouter)
-app.use('/api/v1/packs', packsRouter)
-app.use('/api/v1/packItems', packItemsRouter)
+app.use('/api/v1/productItems', productItemsRouter)
 app.use('/api/v1/inventories', inventoriesRouter)
 app.use('/api/v1/inventoryTransactions', inventoryTransactionRouter)
 app.use('/api/v1/sales', salesRouter)
 app.use('/api/v1/saleItems', saleItemsRouter)
 app.use('/api/v1/clients', clientsRouter)
+app.use('/api/v1/categories', categoriesRouter)
+app.use('/api/v1/productTypes', productTypesRouter)
 app.use('/api/v1/methodPayments', methodPaymentRouter)
 
 // app server listening

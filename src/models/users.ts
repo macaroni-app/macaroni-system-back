@@ -8,6 +8,7 @@ export interface IUser extends Document {
   email: string
   refreshToken: string
   isDeleted: boolean
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date
@@ -41,6 +42,10 @@ const userSchema = new Schema({
   isDeleted: {
     type: Boolean,
     default: false
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
   createdAt: {
     type: Date,

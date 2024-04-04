@@ -1,10 +1,7 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
-export interface IProduct extends Document {
+
+export interface IAsset extends Document {
   name: string
-  costPrice: Number
-  wholesalePrice: Number
-  retailsalePrice: Number
-  type: string
   category: string
   isDeleted: boolean
   isActive: boolean
@@ -15,26 +12,9 @@ export interface IProduct extends Document {
   updatedBy: string
 }
 
-const productSchema = new Schema({
+const assetSchema = new Schema({
   name: {
     type: String,
-    required: true
-  },
-  costPrice: {
-    type: Number,
-    required: true
-  },
-  wholesalePrice: {
-    type: Number,
-    required: true
-  },
-  retailsalePrice: {
-    type: Number,
-    required: true
-  },
-  type: {
-    type: SchemaTypes.ObjectId,
-    ref: 'type',
     required: true
   },
   category: {
@@ -74,6 +54,6 @@ const productSchema = new Schema({
   }
 })
 
-const Product = model<IProduct>('product', productSchema)
+const Asset = model<IAsset>('asset', assetSchema)
 
-export default Product
+export default Asset
