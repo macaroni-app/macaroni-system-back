@@ -5,7 +5,7 @@ export const ProductSchema = z.object({
   costPrice: z.number().nonnegative(),
   wholesalePrice: z.number().nonnegative(),
   retailsalePrice: z.number().nonnegative(),
-  type: z.string().min(24).max(24).optional(),
+  productType: z.string().min(24).max(24).optional(),
   category: z.string().min(24).max(24).optional(),
   isDeleted: z.boolean().optional(),
   isActive: z.boolean().optional(),

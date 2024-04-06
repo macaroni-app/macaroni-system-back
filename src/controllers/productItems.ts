@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { productItemsService } from '../services/productItems'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateProductItemsBodyType, DeleteProductItemsParamsType, GetProductItemsParamsType, GetProductItemsQueryType, ProductItemsType, UpdateProductItemsBodyType, UpdateProductItemsParamsType } from '../schemas/productItems'
+import { CreateManyProductItemsBodyType, CreateProductItemsBodyType, DeleteProductItemsParamsType, GetProductItemsParamsType, GetProductItemsQueryType, ProductItemsType, UpdateProductItemsBodyType, UpdateProductItemsParamsType } from '../schemas/productItems'
 
 const productItemsController = {
   getAll: async (req: Request<{}, {}, {}, GetProductItemsQueryType>, res: Response): Promise<Response> => {
@@ -61,6 +61,27 @@ const productItemsController = {
       status: 201,
       isStored: true,
       data: productItemStored
+    })
+  },
+  storeMany: async (req: Request<{}, {}, CreateManyProductItemsBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.productItems !== undefined && req.body.productItems.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const productItemToStore = req.body.productItems.map(productItem => {
+      return { ...productItem, createdBy: req.user?.id, updatedBy: req.user?.id }
+    })
+
+    const data = await productItemsService.storeMany(productItemToStore)
+
+    return res.status(201).json({
+      status: 201,
+      isStored: true,
+      data
     })
   },
   delete: async (req: Request<DeleteProductItemsParamsType, {}, {}, {}>, res: Response): Promise<Response> => {

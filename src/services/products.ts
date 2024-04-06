@@ -39,7 +39,7 @@ export const productsService = {
       product.wholesalePrice = newProductData.wholesalePrice
       product.retailsalePrice = newProductData.retailsalePrice
       product.category = newProductData.category
-      product.type = newProductData.type
+      product.productType = newProductData.productType
 
       return await Product.updateOne({ _id: id }, { $set: { ...product } })
     } catch (error) {

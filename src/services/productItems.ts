@@ -42,5 +42,9 @@ export const productItemsService = {
     } catch (error) {
       return error
     }
+  },
+  storeMany: async (newProductItems: ProductItemsType[]) => {
+    const data = await ProductItem.insertMany(newProductItems)
+    return data
   }
 }

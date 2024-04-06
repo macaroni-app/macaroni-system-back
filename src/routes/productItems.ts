@@ -4,7 +4,7 @@ import productItemsController from '../controllers/productItems'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateProductItemsSchema, DeleteProductItemsParamsType, DeleteProductItemsSchema, GetProductItemsSchema, UpdateProductItemsBodyType, UpdateProductItemsParamsType, UpdateProductItemsSchema } from '../schemas/productItems'
+import { CreateManyProductItemsSchema, CreateProductItemsSchema, DeleteProductItemsParamsType, DeleteProductItemsSchema, GetProductItemsSchema, UpdateProductItemsBodyType, UpdateProductItemsParamsType, UpdateProductItemsSchema } from '../schemas/productItems'
 
 const productItemsRouter = Router()
 
@@ -16,6 +16,9 @@ productItemsRouter.get('/:id', [verifyToken as RequestHandler, schemaValidator(G
 
 // POST - http://localhost:3000/api/v1/productItems
 productItemsRouter.post('/', [verifyToken as RequestHandler, schemaValidator(CreateProductItemsSchema)], productItemsController.store as RequestHandler)
+
+// POST - http://localhost:3000/api/v1/productItems
+productItemsRouter.post('/bulk', [verifyToken as RequestHandler, schemaValidator(CreateManyProductItemsSchema)], productItemsController.storeMany as RequestHandler)
 
 // PUT - http://localhost:3000/api/v1/productItems/:id
 productItemsRouter.put('/:id', [verifyToken as RequestHandler, schemaValidator(UpdateProductItemsSchema)], productItemsController.update as RequestHandler<UpdateProductItemsParamsType, {}, UpdateProductItemsBodyType, {}>)

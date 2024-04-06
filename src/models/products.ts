@@ -4,7 +4,7 @@ export interface IProduct extends Document {
   costPrice: Number
   wholesalePrice: Number
   retailsalePrice: Number
-  type: string
+  productType: string
   category: string
   isDeleted: boolean
   isActive: boolean
@@ -32,9 +32,9 @@ const productSchema = new Schema({
     type: Number,
     required: true
   },
-  type: {
+  productType: {
     type: SchemaTypes.ObjectId,
-    ref: 'type',
+    ref: 'productType',
     required: true
   },
   category: {

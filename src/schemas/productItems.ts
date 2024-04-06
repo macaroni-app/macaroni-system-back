@@ -16,6 +16,12 @@ export const CreateProductItemsSchema = z.object({
   body: ProductItemsSchema
 })
 
+export const CreateManyProductItemsSchema = z.object({
+  body: z.object({
+    productItems: z.array(ProductItemsSchema)
+  })
+})
+
 export const UpdateProductItemsSchema = z.object({
   body: ProductItemsSchema,
   params: z.object({
@@ -40,6 +46,7 @@ export const DeleteProductItemsSchema = z.object({
 
 export type ProductItemsType = z.infer<typeof ProductItemsSchema>
 export type CreateProductItemsBodyType = z.infer<typeof CreateProductItemsSchema>['body']
+export type CreateManyProductItemsBodyType = z.infer<typeof CreateManyProductItemsSchema>['body']
 export type UpdateProductItemsBodyType = z.infer<typeof UpdateProductItemsSchema>['body']
 export type UpdateProductItemsParamsType = z.infer<typeof UpdateProductItemsSchema>['params']
 export type GetProductItemsParamsType = z.infer<typeof GetProductItemsSchema>['params']
