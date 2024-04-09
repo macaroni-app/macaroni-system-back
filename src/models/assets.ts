@@ -3,6 +3,7 @@ import { model, Schema, Document, SchemaTypes } from 'mongoose'
 export interface IAsset extends Document {
   name: string
   category: string
+  costPrice: number
   isDeleted: boolean
   isActive: boolean
   createdAt: Date
@@ -20,6 +21,10 @@ const assetSchema = new Schema({
   category: {
     type: SchemaTypes.ObjectId,
     ref: 'category',
+    required: true
+  },
+  costPrice: {
+    type: Number,
     required: true
   },
   createdAt: {

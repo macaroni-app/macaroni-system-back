@@ -36,6 +36,7 @@ export const assetService = {
       const asset = await Asset.findOne({ _id: id }) as AssetType
       asset.name = newAssetData?.name
       asset.category = newAssetData?.category
+      asset.costPrice = newAssetData?.costPrice
 
       return await Asset.updateOne({ _id: id }, { $set: { ...asset } })
     } catch (error) {

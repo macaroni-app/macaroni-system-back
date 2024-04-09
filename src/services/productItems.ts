@@ -5,7 +5,7 @@ import { ProductItemsType } from '../schemas/productItems'
 export const productItemsService = {
   getAll: (options: FilterQuery<ProductItemsType>) => {
     try {
-      return ProductItem.find({ ...options }).sort({ createdAt: -1 })
+      return ProductItem.find({ ...options }).populate('product').populate('asset').sort({ createdAt: -1 })
     } catch (error) {
       return error
     }

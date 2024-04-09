@@ -42,7 +42,8 @@ const assetsController = {
   store: async (req: Request<{}, {}, CreateAssetBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.name === null || req.body.name === undefined) ||
-      (req.body.category === null || req.body.category === undefined)
+      (req.body.category === null || req.body.category === undefined) ||
+      (req.body.costPrice === null || req.body.costPrice === undefined)
     ) {
       return res.status(400).json({
         status: 400,
@@ -85,7 +86,8 @@ const assetsController = {
   update: async (req: Request<UpdateAssetParamsType, {}, UpdateAssetBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.name === null || req.body.name === undefined) ||
-      (req.body.category === null || req.body.category === undefined)
+      (req.body.category === null || req.body.category === undefined) ||
+      (req.body.costPrice === null || req.body.costPrice === undefined)
     ) {
       return res.status(400).json({
         status: 400,

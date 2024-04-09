@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const AssetSchema = z.object({
   name: z.string().min(1),
   category: z.string().min(24).max(24).optional(),
+  costPrice: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   isActive: z.boolean().optional(),
   createdAt: z.date().optional(),
