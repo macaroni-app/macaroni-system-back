@@ -1,6 +1,7 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
 
 export interface IProductItem extends Document {
+  _id: string
   asset: string
   product: string
   quantity: Number

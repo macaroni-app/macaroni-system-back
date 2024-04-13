@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { productItemsService } from '../services/productItems'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateManyProductItemsBodyType, CreateProductItemsBodyType, DeleteProductItemsParamsType, GetProductItemsParamsType, GetProductItemsQueryType, ProductItemsType, UpdateProductItemsBodyType, UpdateProductItemsParamsType } from '../schemas/productItems'
+import { CreateManyProductItemsBodyType, CreateProductItemsBodyType, DeleteProductItemsParamsType, GetProductItemsParamsType, GetProductItemsQueryType, ProductItemsType, UpdateProductItemsBodyType, UpdateProductItemsParamsType, UpdateManyProductItemsBodyType, DeleteManyProductItemsBodyType } from '../schemas/productItems'
+import { IProductItem } from '../models/productItems'
 
 const productItemsController = {
   getAll: async (req: Request<{}, {}, {}, GetProductItemsQueryType>, res: Response): Promise<Response> => {
@@ -136,6 +137,54 @@ const productItemsController = {
       status: 200,
       isUpdated: true,
       data: productItemUpdated
+    })
+  },
+  updateMany: async (req: Request<{}, {}, UpdateManyProductItemsBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.productItems !== undefined && req.body.productItems.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const productItemsToUpdate = req.body.productItems.map((productItem) => {
+      return {
+        ...productItem
+      }
+    }) as unknown as IProductItem[]
+
+    const data = await productItemsService.updateMany(productItemsToUpdate)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data
+    })
+  },
+  deleteMany: async (req: Request<{}, {}, DeleteManyProductItemsBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.productItems !== undefined && req.body.productItems.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const productItemsIds: string[] = []
+
+    req.body.productItems.forEach(productItem => {
+      if (productItem.id !== undefined) {
+        productItemsIds.push(productItem.id)
+      }
+    })
+
+    const data = await productItemsService.deleteMany(productItemsIds)
+
+    return res.status(200).json({
+      status: 200,
+      isDeleted: true,
+      data
     })
   }
 }

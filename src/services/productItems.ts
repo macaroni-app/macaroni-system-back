@@ -1,5 +1,5 @@
 import { FilterQuery } from 'mongoose'
-import ProductItem from '../models/productItems'
+import ProductItem, { IProductItem } from '../models/productItems'
 import { ProductItemsType } from '../schemas/productItems'
 
 export const productItemsService = {
@@ -43,8 +43,48 @@ export const productItemsService = {
       return error
     }
   },
+  updateMany: async (productItemsToUpdate: IProductItem[]) => {
+    try {
+      const newProductItemIds = productItemsToUpdate?.map(
+        (productItemToUpdate) => productItemToUpdate.id
+      )
+
+      const productItems: IProductItem[] = await ProductItem.find({
+        _id: { $in: newProductItemIds }
+      })
+
+      const productItemsUpdated: IProductItem[] = []
+
+      productItems.map((productItem) => {
+        return productItemsToUpdate.forEach((productItemToUpdate) => {
+          if (productItem.id === productItemToUpdate.id) {
+            productItem.quantity = productItemToUpdate.quantity
+            productItem.asset = productItemToUpdate.asset
+            productItem.product = productItemToUpdate.product
+            productItemsUpdated.push(productItem)
+          }
+        })
+      })
+
+      let data
+      if (productItems.length > 0) {
+        data = await ProductItem.bulkSave(productItemsUpdated)
+      }
+      return data
+    } catch (error) {
+      console.log(error)
+      return error
+    }
+  },
   storeMany: async (newProductItems: ProductItemsType[]) => {
     const data = await ProductItem.insertMany(newProductItems)
     return data
+  },
+  deleteMany: async (newProductItemsIds: string[]) => {
+    try {
+      return await ProductItem.deleteMany({ _id: { $in: newProductItemsIds } })
+    } catch (error) {
+      return error
+    }
   }
 }
