@@ -1,6 +1,6 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
 export interface IInventory extends Document {
-  product: string
+  asset: string
   quantityAvailable: Number
   isDeleted: boolean
   createdAt: Date
@@ -11,9 +11,9 @@ export interface IInventory extends Document {
 }
 
 const inventorySchema = new Schema({
-  product: {
+  asset: {
     type: SchemaTypes.ObjectId,
-    ref: 'product',
+    ref: 'asset',
     required: true
   },
   quantityAvailable: {

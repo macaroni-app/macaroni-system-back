@@ -5,7 +5,7 @@ export enum TransactionType {
   SELL = 'SELL',
 }
 export interface IInventoryTransaction extends Document {
-  product: string
+  asset: string
   transactionType: TransactionType
   affectedAmount: Number
   isDeleted: boolean
@@ -17,9 +17,9 @@ export interface IInventoryTransaction extends Document {
 }
 
 const inventoryTransactionSchema = new Schema({
-  product: {
+  asset: {
     type: SchemaTypes.ObjectId,
-    ref: 'product',
+    ref: 'asset',
     required: true
   },
   transactionType: {

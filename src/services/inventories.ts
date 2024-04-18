@@ -5,7 +5,7 @@ import { InventoryType } from '../schemas/inventories'
 export const inventoryService = {
   getAll: (options: FilterQuery<InventoryType>) => {
     try {
-      return Inventory.find({ ...options }).sort({ createdAt: -1 })
+      return Inventory.find({ ...options }).populate('asset').sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
@@ -34,7 +34,7 @@ export const inventoryService = {
   update: async (id: string, newInventoryData: InventoryType) => {
     try {
       const inventory = await Inventory.findOne({ _id: id }) as InventoryType
-      inventory.product = newInventoryData?.product
+      inventory.asset = newInventoryData?.asset
       inventory.quantityAvailable = newInventoryData?.quantityAvailable
 
       // return await inventory.save()

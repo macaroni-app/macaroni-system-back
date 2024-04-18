@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const InventorySchema = z.object({
-  product: z.string().min(24).max(24),
+  asset: z.string().min(24).max(24),
   quantityAvailable: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),

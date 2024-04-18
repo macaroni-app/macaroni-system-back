@@ -41,7 +41,7 @@ const inventoryTransactionController = {
   },
   store: async (req: Request<{}, {}, CreateInventoryTransactionBodyType, {}>, res: Response): Promise<Response> => {
     if (
-      (req.body.product === null || req.body.product === undefined) ||
+      (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.transactionType === null || req.body.transactionType === undefined) ||
       (req.body.affectedAmount === null || req.body.affectedAmount === undefined)
     ) {
@@ -85,7 +85,7 @@ const inventoryTransactionController = {
   },
   update: async (req: Request<UpdateInventoryTransactionParamsType, {}, UpdateInventoryTransactionBodyType, {}>, res: Response): Promise<Response> => {
     if (
-      (req.body.product === null || req.body.product === undefined) ||
+      (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.transactionType === null || req.body.transactionType === undefined) ||
       (req.body.affectedAmount === null || req.body.affectedAmount === undefined)
     ) {

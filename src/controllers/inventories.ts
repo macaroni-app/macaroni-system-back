@@ -40,7 +40,7 @@ const inventoriesController = {
   },
   store: async (req: Request<{}, {}, CreateInventoryBodyType, {}>, res: Response): Promise<Response> => {
     if (
-      (req.body.product === null || req.body.product === undefined) ||
+      (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.quantityAvailable === null || req.body.quantityAvailable === undefined)
     ) {
       return res.status(400).json({
@@ -83,7 +83,7 @@ const inventoriesController = {
   },
   update: async (req: Request<UpdateInventoryParamsType, {}, UpdateInventoryBodyType, {}>, res: Response): Promise<Response> => {
     if (
-      (req.body.product === null || req.body.product === undefined) ||
+      (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.quantityAvailable === null || req.body.quantityAvailable === undefined)
     ) {
       return res.status(400).json({
