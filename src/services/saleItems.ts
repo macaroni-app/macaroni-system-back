@@ -35,7 +35,6 @@ export const saleItemsService = {
     try {
       const sale = await SaleItem.findOne({ _id: id }) as SaleItemType
       sale.sale = newSaleData?.sale
-      sale.pack = newSaleData?.pack
       sale.product = newSaleData?.product
       sale.quantity = newSaleData?.quantity
       sale.subtotal = newSaleData?.subtotal

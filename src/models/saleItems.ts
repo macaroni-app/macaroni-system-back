@@ -2,7 +2,6 @@ import { model, Schema, Document, SchemaTypes } from 'mongoose'
 export interface ISaleItem extends Document {
   sale: string
   product: string
-  pack: string
   quantity: number
   subtotal: number
   isDeleted: boolean
@@ -22,10 +21,6 @@ const saleItemSchema = new Schema({
   product: {
     type: SchemaTypes.ObjectId,
     ref: 'product'
-  },
-  pack: {
-    type: SchemaTypes.ObjectId,
-    ref: 'pack'
   },
   quantity: {
     type: Number,

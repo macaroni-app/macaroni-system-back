@@ -5,7 +5,7 @@ import { ClientType } from '../schemas/clients'
 export const clientService = {
   getAll: (options: FilterQuery<ClientType>) => {
     try {
-      return Client.find({ ...options }, ['name']).sort({ createdAt: -1 })
+      return Client.find({ ...options }).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }

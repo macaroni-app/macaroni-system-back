@@ -5,7 +5,7 @@ import { MethodPaymentsType } from '../schemas/methodPayments'
 export const methodPaymentService = {
   getAll: (options: FilterQuery<MethodPaymentsType>) => {
     try {
-      return MethodPayment.find({ ...options }, ['name']).sort({
+      return MethodPayment.find({ ...options }).sort({
         createdAt: -1
       })
     } catch (error) {

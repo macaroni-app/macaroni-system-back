@@ -41,8 +41,7 @@ const saleItemsController = {
   store: async (req: Request<{}, {}, CreateSaleItemBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.sale === null || req.body.sale === undefined) ||
-      ((req.body.product === null || req.body.product === undefined) &&
-      (req.body.pack === null || req.body.pack === undefined)
+      ((req.body.product === null || req.body.product === undefined)
       ) ||
       (req.body.subtotal === null || req.body.subtotal === undefined) ||
       (req.body.quantity === null || req.body.quantity === undefined)
@@ -88,8 +87,7 @@ const saleItemsController = {
   update: async (req: Request<UpdateSaleItemParamsType, {}, UpdateSaleItemBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.sale === null || req.body.sale === undefined) ||
-      ((req.body.product === null || req.body.product === undefined) &&
-      (req.body.pack === null || req.body.pack === undefined)
+      ((req.body.product === null || req.body.product === undefined)
       ) ||
       (req.body.subtotal === null || req.body.subtotal === undefined) ||
       (req.body.quantity === null || req.body.quantity === undefined)

@@ -3,7 +3,6 @@ import { z } from 'zod'
 export const SaleItemSchema = z.object({
   sale: z.string().min(24).max(24).optional(),
   product: z.string().min(24).max(24).optional(),
-  pack: z.string().min(24).max(24).optional(),
   quantity: z.number().nonnegative(),
   subtotal: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
