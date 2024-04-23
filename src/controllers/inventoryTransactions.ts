@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { inventoryTransactionService } from '../services/inventoryTransactions'
 import { IInventoryTransaction } from '../models/inventoryTransactions'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateInventoryTransactionBodyType, DeleteInventoryTransactionParamsType, GetInventoryTransactionParamsType, GetInventoryTransactionQueryType, InventoryTransactionType, UpdateInventoryTransactionBodyType, UpdateInventoryTransactionParamsType } from '../schemas/inventoryTransactions'
+import { CreateInventoryTransactionBodyType, CreateManyInventoryTransactionsBodyType, DeleteInventoryTransactionParamsType, GetInventoryTransactionParamsType, GetInventoryTransactionQueryType, InventoryTransactionType, UpdateInventoryTransactionBodyType, UpdateInventoryTransactionParamsType } from '../schemas/inventoryTransactions'
 
 const inventoryTransactionController = {
   getAll: async (req: Request<{}, {}, {}, GetInventoryTransactionQueryType>, res: Response): Promise<Response> => {
@@ -62,6 +62,27 @@ const inventoryTransactionController = {
       status: 201,
       isStored: true,
       data: inventoryTransactionStored
+    })
+  },
+  storeMany: async (req: Request<{}, {}, CreateManyInventoryTransactionsBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.inventoryTransactions !== undefined && req.body.inventoryTransactions.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const inventoryTransactionToStore = req.body.inventoryTransactions.map(inventoryTransaction => {
+      return { ...inventoryTransaction, createdBy: req.user?.id, updatedBy: req.user?.id }
+    })
+
+    const data = await inventoryTransactionService.storeMany(inventoryTransactionToStore)
+
+    return res.status(201).json({
+      status: 201,
+      isStored: true,
+      data
     })
   },
   delete: async (req: Request<DeleteInventoryTransactionParamsType, {}, {}, {}>, res: Response): Promise<Response> => {

@@ -16,6 +16,12 @@ export const CreateInventoryTransactionSchema = z.object({
   body: InventoryTransactionSchema
 })
 
+export const CreateManyInventoryTransactionSchema = z.object({
+  body: z.object({
+    inventoryTransactions: z.array(InventoryTransactionSchema)
+  })
+})
+
 export const UpdateInventoryTransactionSchema = z.object({
   body: InventoryTransactionSchema,
   params: z.object({
@@ -40,6 +46,7 @@ export const DeleteInventoryTransactionSchema = z.object({
 
 export type InventoryTransactionType = z.infer<typeof InventoryTransactionSchema>
 export type CreateInventoryTransactionBodyType = z.infer<typeof CreateInventoryTransactionSchema>['body']
+export type CreateManyInventoryTransactionsBodyType = z.infer<typeof CreateManyInventoryTransactionSchema>['body']
 export type UpdateInventoryTransactionBodyType = z.infer<typeof UpdateInventoryTransactionSchema>['body']
 export type UpdateInventoryTransactionParamsType = z.infer<typeof UpdateInventoryTransactionSchema>['params']
 export type GetInventoryTransactionParamsType = z.infer<typeof GetInventoryTransactionSchema>['params']

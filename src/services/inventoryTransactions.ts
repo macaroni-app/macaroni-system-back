@@ -1,5 +1,5 @@
 import { FilterQuery } from 'mongoose'
-import InventoryTransaction from '../models/inventoryTransactions'
+import InventoryTransaction, { IInventoryTransaction } from '../models/inventoryTransactions'
 import { InventoryTransactionType } from '../schemas/inventoryTransactions'
 
 export const inventoryTransactionService = {
@@ -42,5 +42,42 @@ export const inventoryTransactionService = {
     } catch (error) {
       return error
     }
+  },
+  updateMany: async (inventoryTransactionsToUpdate: IInventoryTransaction[]) => {
+    try {
+      const newInventoryTransactionIds = inventoryTransactionsToUpdate?.map(
+        (inventoryTransactionToUpdate) => inventoryTransactionToUpdate.id
+      )
+
+      const inventoryTransactions: IInventoryTransaction[] = await InventoryTransaction.find({
+        _id: { $in: newInventoryTransactionIds }
+      })
+
+      const inventoryTransactionsUpdated: IInventoryTransaction[] = []
+
+      inventoryTransactions.map((inventoryTransaction) => {
+        return inventoryTransactionsToUpdate.forEach((inventoryTransactionToUpdate) => {
+          if (inventoryTransaction.id === inventoryTransactionToUpdate.id) {
+            inventoryTransaction.asset = inventoryTransactionToUpdate.asset
+            inventoryTransaction.affectedAmount = inventoryTransactionToUpdate.affectedAmount
+            inventoryTransaction.transactionType = inventoryTransactionToUpdate.transactionType
+            inventoryTransactionsUpdated.push(inventoryTransaction)
+          }
+        })
+      })
+
+      let data
+      if (inventoryTransactions.length > 0) {
+        data = await InventoryTransaction.bulkSave(inventoryTransactionsUpdated)
+      }
+      return data
+    } catch (error) {
+      console.log(error)
+      return error
+    }
+  },
+  storeMany: async (newInventoryTransactions: InventoryTransactionType[]) => {
+    const data = await InventoryTransaction.insertMany(newInventoryTransactions)
+    return data
   }
 }

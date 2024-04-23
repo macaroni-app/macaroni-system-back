@@ -4,7 +4,7 @@ import inventoriesController from '../controllers/inventories'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateInventorySchema, DeleteInventoryParamsType, DeleteInventorySchema, GetInventorySchema, UpdateInventoryBodyType, UpdateInventoryParamsType, UpdateInventorySchema } from '../schemas/inventories'
+import { CreateInventorySchema, DeleteInventoryParamsType, DeleteInventorySchema, GetInventorySchema, UpdateInventoryBodyType, UpdateInventoryParamsType, UpdateInventorySchema, UpdateManyInventoriesBodyType, UpdateManyInventorySchema } from '../schemas/inventories'
 
 const inventoryRouter = Router()
 
@@ -17,11 +17,11 @@ inventoryRouter.get('/:id', [verifyToken as RequestHandler, schemaValidator(GetI
 // POST - http://localhost:3000/api/v1/inventories
 inventoryRouter.post('/', [verifyToken as RequestHandler, schemaValidator(CreateInventorySchema)], inventoriesController.store as RequestHandler)
 
+// PUT - http://localhost:3000/api/v1/inventories
+inventoryRouter.put('/bulkUpdate', [verifyToken as RequestHandler, schemaValidator(UpdateManyInventorySchema)], inventoriesController.updateMany as RequestHandler<{}, {}, UpdateManyInventoriesBodyType, {}>)
+
 // PUT - http://localhost:3000/api/v1/inventories/:id
 inventoryRouter.put('/:id', [verifyToken as RequestHandler, schemaValidator(UpdateInventorySchema)], inventoriesController.update as RequestHandler<UpdateInventoryParamsType, {}, UpdateInventoryBodyType, {}>)
-
-// PUT - http://localhost:3000/api/v1/inventories
-// baseProductsRouter.put('/', verifyToken as RequestHandler, productsController.updateMany as RequestHandler)
 
 // DELETE - http://localhost:3000/api/v1/inventories/:id
 inventoryRouter.delete('/:id', [verifyToken as RequestHandler, schemaValidator(DeleteInventorySchema)], inventoriesController.delete as RequestHandler<DeleteInventoryParamsType, {}, {}, {}>)

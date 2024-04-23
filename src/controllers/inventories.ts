@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { inventoryService } from '../services/inventories'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateInventoryBodyType, DeleteInventoryParamsType, GetInventoryParamsType, GetInventoryQueryType, InventoryType, UpdateInventoryBodyType, UpdateInventoryParamsType } from '../schemas/inventories'
+import { CreateInventoryBodyType, DeleteInventoryParamsType, GetInventoryParamsType, GetInventoryQueryType, InventoryType, UpdateInventoryBodyType, UpdateInventoryParamsType, UpdateManyInventoriesBodyType } from '../schemas/inventories'
+import { IInventory } from '../models/inventories'
 
 const inventoriesController = {
   getAll: async (req: Request<{}, {}, {}, GetInventoryQueryType>, res: Response): Promise<Response> => {
@@ -113,6 +114,29 @@ const inventoriesController = {
       status: 200,
       isUpdated: true,
       data: inventoryUpdated
+    })
+  },
+  updateMany: async (req: Request<{}, {}, UpdateManyInventoriesBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.inventories !== undefined && req.body.inventories.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const inventoriesToUpdate = req.body.inventories.map((inventory) => {
+      return {
+        ...inventory
+      }
+    }) as unknown as IInventory[]
+
+    const data = await inventoryService.updateMany(inventoriesToUpdate)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data
     })
   }
 }

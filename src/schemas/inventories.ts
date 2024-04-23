@@ -1,8 +1,9 @@
 import { z } from 'zod'
 
 export const InventorySchema = z.object({
-  asset: z.string().min(24).max(24),
-  quantityAvailable: z.number().nonnegative(),
+  id: z.string().optional(),
+  asset: z.string().min(24).max(24).optional(),
+  quantityAvailable: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
@@ -13,6 +14,12 @@ export const InventorySchema = z.object({
 
 export const CreateInventorySchema = z.object({
   body: InventorySchema
+})
+
+export const UpdateManyInventorySchema = z.object({
+  body: z.object({
+    inventories: z.array(InventorySchema)
+  })
 })
 
 export const UpdateInventorySchema = z.object({
@@ -39,6 +46,7 @@ export const DeleteInventorySchema = z.object({
 
 export type InventoryType = z.infer<typeof InventorySchema>
 export type CreateInventoryBodyType = z.infer<typeof CreateInventorySchema>['body']
+export type UpdateManyInventoriesBodyType = z.infer<typeof UpdateManyInventorySchema>['body']
 export type UpdateInventoryBodyType = z.infer<typeof UpdateInventorySchema>['body']
 export type UpdateInventoryParamsType = z.infer<typeof UpdateInventorySchema>['params']
 export type GetInventoryParamsType = z.infer<typeof GetInventorySchema>['params']

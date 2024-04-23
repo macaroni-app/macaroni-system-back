@@ -4,7 +4,7 @@ import inventoryTransactionController from '../controllers/inventoryTransactions
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateInventoryTransactionSchema, GetInventoryTransactionSchema, UpdateInventoryTransactionParamsType, UpdateInventoryTransactionBodyType, UpdateInventoryTransactionSchema, DeleteInventoryTransactionParamsType, DeleteInventoryTransactionSchema } from '../schemas/inventoryTransactions'
+import { CreateInventoryTransactionSchema, GetInventoryTransactionSchema, UpdateInventoryTransactionParamsType, UpdateInventoryTransactionBodyType, UpdateInventoryTransactionSchema, DeleteInventoryTransactionParamsType, DeleteInventoryTransactionSchema, CreateManyInventoryTransactionSchema } from '../schemas/inventoryTransactions'
 
 const inventoryTransactionRouter = Router()
 
@@ -16,6 +16,9 @@ inventoryTransactionRouter.get('/:id', [verifyToken as RequestHandler, schemaVal
 
 // POST - http://localhost:3000/api/v1/inventoryTransactions
 inventoryTransactionRouter.post('/', [verifyToken as RequestHandler, schemaValidator(CreateInventoryTransactionSchema)], inventoryTransactionController.store as RequestHandler)
+
+// POST - http://localhost:3000/api/v1/inventoryTransactions
+inventoryTransactionRouter.post('/bulkCreate', [verifyToken as RequestHandler, schemaValidator(CreateManyInventoryTransactionSchema)], inventoryTransactionController.storeMany as RequestHandler)
 
 // PUT - http://localhost:3000/api/v1/inventoryTransactions/:id
 inventoryTransactionRouter.put('/:id', [verifyToken as RequestHandler, schemaValidator(UpdateInventoryTransactionSchema)], inventoryTransactionController.update as RequestHandler<UpdateInventoryTransactionParamsType, {}, UpdateInventoryTransactionBodyType, {}>)

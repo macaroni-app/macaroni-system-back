@@ -1,5 +1,5 @@
 import { FilterQuery } from 'mongoose'
-import Inventory from '../models/inventories'
+import Inventory, { IInventory } from '../models/inventories'
 import { InventoryType } from '../schemas/inventories'
 
 export const inventoryService = {
@@ -40,6 +40,38 @@ export const inventoryService = {
       // return await inventory.save()
       return await Inventory.updateOne({ _id: id }, { $set: { ...inventory } })
     } catch (error) {
+      return error
+    }
+  },
+  updateMany: async (inventoriesToUpdate: IInventory[]) => {
+    try {
+      const newInventoryIds = inventoriesToUpdate?.map(
+        (inventoryToUpdate) => inventoryToUpdate.id
+      )
+
+      const inventories: IInventory[] = await Inventory.find({
+        _id: { $in: newInventoryIds }
+      })
+
+      const inventoriesUpdated: IInventory[] = []
+
+      inventories.map((inventory) => {
+        return inventoriesToUpdate.forEach((inventoryToUpdate) => {
+          if (inventory.id === inventoryToUpdate.id) {
+            inventory.asset = inventoryToUpdate.asset
+            inventory.quantityAvailable = inventoryToUpdate.quantityAvailable
+            inventoriesUpdated.push(inventory)
+          }
+        })
+      })
+
+      let data
+      if (inventories.length > 0) {
+        data = await Inventory.bulkSave(inventoriesUpdated)
+      }
+      return data
+    } catch (error) {
+      console.log(error)
       return error
     }
   }
