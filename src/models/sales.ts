@@ -1,9 +1,16 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
+
+export enum SaleStatus {
+  PAID = 'PAID',
+  CANCELLED = 'CANCELLED'
+}
+
 export interface ISale extends Document {
   isRetail: boolean
   client: string
   paymentMethod: string
   total: number
+  status: SaleStatus
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
@@ -29,6 +36,10 @@ const saleSchema = new Schema({
   },
   total: {
     type: Number,
+    required: true
+  },
+  status: {
+    type: String,
     required: true
   },
   createdAt: {

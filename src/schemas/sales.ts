@@ -5,6 +5,7 @@ export const SaleSchema = z.object({
   client: z.string().min(24).max(24).optional(),
   paymentMethod: z.string().min(24).max(24).optional(),
   total: z.number().nonnegative(),
+  status: z.enum(['PAID', 'CANCELLED']),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

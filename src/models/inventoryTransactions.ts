@@ -3,7 +3,11 @@ import { model, Schema, Document, SchemaTypes } from 'mongoose'
 export enum TransactionType {
   BUY = 'BUY',
   SELL = 'SELL',
+  RETURN = 'RETURN',
+  ADJUSTMENT_UP = 'ADJUSTMENT_UP',
+  ADJUSTMENT_DOWN = 'ADJUSTMENT_DOWN'
 }
+
 export interface IInventoryTransaction extends Document {
   asset: string
   transactionType: TransactionType

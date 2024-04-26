@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateSaleItemBodyType, DeleteSaleItemParamsType, GetSaleItemParamsType, GetSaleItemQueryType, SaleItemType, UpdateSaleItemBodyType, UpdateSaleItemParamsType } from '../schemas/saleItems'
+import { CreateManySaleItemsBodyType, CreateSaleItemBodyType, DeleteManySaleItemsBodyType, DeleteSaleItemParamsType, GetSaleItemParamsType, GetSaleItemQueryType, SaleItemType, UpdateSaleItemBodyType, UpdateSaleItemParamsType } from '../schemas/saleItems'
 import { saleItemsService } from '../services/saleItems'
+import { ISaleItem } from '../models/saleItems'
 
 const saleItemsController = {
   getAll: async (req: Request<{}, {}, {}, GetSaleItemQueryType>, res: Response): Promise<Response> => {
@@ -43,7 +44,7 @@ const saleItemsController = {
       (req.body.sale === null || req.body.sale === undefined) ||
       ((req.body.product === null || req.body.product === undefined)
       ) ||
-      (req.body.subtotal === null || req.body.subtotal === undefined) ||
+      // (req.body.subtotal === null || req.body.subtotal === undefined) ||
       (req.body.quantity === null || req.body.quantity === undefined)
     ) {
       return res.status(400).json({
@@ -89,7 +90,7 @@ const saleItemsController = {
       (req.body.sale === null || req.body.sale === undefined) ||
       ((req.body.product === null || req.body.product === undefined)
       ) ||
-      (req.body.subtotal === null || req.body.subtotal === undefined) ||
+      // (req.body.subtotal === null || req.body.subtotal === undefined) ||
       (req.body.quantity === null || req.body.quantity === undefined)
     ) {
       return res.status(400).json({
@@ -119,6 +120,54 @@ const saleItemsController = {
       status: 200,
       isUpdated: true,
       data: salesUpdated
+    })
+  },
+  storeMany: async (req: Request<{}, {}, CreateManySaleItemsBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.saleItems !== undefined && req.body.saleItems.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const saleItemsToUpdate = req.body.saleItems.map((saleItem) => {
+      return {
+        ...saleItem, createdBy: req.user?.id, updatedBy: req.user?.id
+      }
+    }) as unknown as ISaleItem[]
+
+    const data = await saleItemsService.storeMany(saleItemsToUpdate)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data
+    })
+  },
+  deleteMany: async (req: Request<{}, {}, DeleteManySaleItemsBodyType, {}>, res: Response): Promise<Response> => {
+    if (req.body.saleItems !== undefined && req.body.saleItems.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const saleItemsIds: string[] = []
+
+    req.body.saleItems.forEach(saleItem => {
+      if (saleItem.id !== undefined) {
+        saleItemsIds.push(saleItem.id)
+      }
+    })
+
+    const data = await saleItemsService.deleteMany(saleItemsIds)
+
+    return res.status(200).json({
+      status: 200,
+      isDeleted: true,
+      data
     })
   }
 }

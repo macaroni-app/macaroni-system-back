@@ -5,7 +5,7 @@ import { SaleType } from '../schemas/sales'
 export const salesService = {
   getAll: (options: FilterQuery<SaleType>) => {
     try {
-      return Sale.find({ ...options }).sort({ createdAt: -1 })
+      return Sale.find({ ...options }).populate('client').populate('paymentMethod').sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
@@ -38,6 +38,7 @@ export const salesService = {
       sale.paymentMethod = newSaleData?.paymentMethod
       sale.isRetail = newSaleData?.isRetail
       sale.total = newSaleData?.total
+      sale.status = newSaleData?.status
 
       return await Sale.updateOne({ _id: id }, { $set: { ...sale } })
     } catch (error) {

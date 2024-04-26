@@ -1,10 +1,11 @@
 import { z } from 'zod'
 
 export const SaleItemSchema = z.object({
+  id: z.string().optional(),
   sale: z.string().min(24).max(24).optional(),
   product: z.string().min(24).max(24).optional(),
-  quantity: z.number().nonnegative(),
-  subtotal: z.number().nonnegative(),
+  quantity: z.number().nonnegative().optional(),
+  subtotal: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
@@ -17,10 +18,22 @@ export const CreateSaleItemSchema = z.object({
   body: SaleItemSchema
 })
 
+export const CreateManySaleItemsSchema = z.object({
+  body: z.object({
+    saleItems: z.array(SaleItemSchema)
+  })
+})
+
 export const UpdateSaleItemSchema = z.object({
   body: SaleItemSchema,
   params: z.object({
     id: z.string().min(24).max(24)
+  })
+})
+
+export const DeleteManySaleItemsSchema = z.object({
+  body: z.object({
+    saleItems: z.array(SaleItemSchema)
   })
 })
 
@@ -41,6 +54,8 @@ export const DeleteSaleItemSchema = z.object({
 
 export type SaleItemType = z.infer<typeof SaleItemSchema>
 export type CreateSaleItemBodyType = z.infer<typeof CreateSaleItemSchema>['body']
+export type CreateManySaleItemsBodyType = z.infer<typeof CreateManySaleItemsSchema>['body']
+export type DeleteManySaleItemsBodyType = z.infer<typeof DeleteManySaleItemsSchema>['body']
 export type UpdateSaleItemBodyType = z.infer<typeof UpdateSaleItemSchema>['body']
 export type UpdateSaleItemParamsType = z.infer<typeof UpdateSaleItemSchema>['params']
 export type GetSaleItemParamsType = z.infer<typeof GetSaleItemSchema>['params']

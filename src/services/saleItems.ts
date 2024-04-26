@@ -5,7 +5,7 @@ import { SaleItemType } from '../schemas/saleItems'
 export const saleItemsService = {
   getAll: (options: FilterQuery<SaleItemType>) => {
     try {
-      return SaleItem.find({ ...options }).sort({ createdAt: -1 })
+      return SaleItem.find({ ...options }).populate('product').populate('sale').sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
@@ -43,6 +43,49 @@ export const saleItemsService = {
     } catch (error) {
       return error
     }
-  }
+  },
+  // updateMany: async (productItemsToUpdate: IProductItem[]) => {
+  //   try {
+  //     const newProductItemIds = productItemsToUpdate?.map(
+  //       (productItemToUpdate) => productItemToUpdate.id
+  //     )
 
+  //     const productItems: IProductItem[] = await ProductItem.find({
+  //       _id: { $in: newProductItemIds }
+  //     })
+
+  //     const productItemsUpdated: IProductItem[] = []
+
+  //     productItems.map((productItem) => {
+  //       return productItemsToUpdate.forEach((productItemToUpdate) => {
+  //         if (productItem.id === productItemToUpdate.id) {
+  //           productItem.quantity = productItemToUpdate.quantity
+  //           productItem.asset = productItemToUpdate.asset
+  //           productItem.product = productItemToUpdate.product
+  //           productItemsUpdated.push(productItem)
+  //         }
+  //       })
+  //     })
+
+  //     let data
+  //     if (productItems.length > 0) {
+  //       data = await ProductItem.bulkSave(productItemsUpdated)
+  //     }
+  //     return data
+  //   } catch (error) {
+  //     console.log(error)
+  //     return error
+  //   }
+  // },
+  storeMany: async (newSaleItems: SaleItemType[]) => {
+    const data = await SaleItem.insertMany(newSaleItems)
+    return data
+  },
+  deleteMany: async (saleItemsIds: string[]) => {
+    try {
+      return await SaleItem.deleteMany({ _id: { $in: saleItemsIds } })
+    } catch (error) {
+      return error
+    }
+  }
 }
