@@ -2,7 +2,8 @@ import { z } from 'zod'
 
 export const InventoryTransactionSchema = z.object({
   asset: z.string().min(24).max(24),
-  transactionType: z.enum(['BUY', 'SELL', 'RETURN', 'ADJUSTMENT_UP', 'ADJUSTMENT_DOWN']),
+  transactionType: z.enum(['UP', 'DOWN']),
+  transactionReason: z.enum(['BUY', 'SELL', 'RETURN', 'ADJUSTMENT', 'DONATION', 'DEFEATED', 'LOSS', 'INTERNAL_USAGE']),
   affectedAmount: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),

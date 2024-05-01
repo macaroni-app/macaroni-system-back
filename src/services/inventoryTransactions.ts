@@ -36,6 +36,7 @@ export const inventoryTransactionService = {
       const inventory = await InventoryTransaction.findOne({ _id: id }) as InventoryTransactionType
       inventory.asset = newInventoryTransactionData?.asset
       inventory.transactionType = newInventoryTransactionData?.transactionType
+      inventory.transactionReason = newInventoryTransactionData?.transactionReason
       inventory.affectedAmount = newInventoryTransactionData?.affectedAmount
 
       return await InventoryTransaction.updateOne({ _id: id }, { $set: { ...inventory } })
@@ -61,6 +62,7 @@ export const inventoryTransactionService = {
             inventoryTransaction.asset = inventoryTransactionToUpdate.asset
             inventoryTransaction.affectedAmount = inventoryTransactionToUpdate.affectedAmount
             inventoryTransaction.transactionType = inventoryTransactionToUpdate.transactionType
+            inventoryTransaction.transactionReason = inventoryTransactionToUpdate.transactionReason
             inventoryTransactionsUpdated.push(inventoryTransaction)
           }
         })
