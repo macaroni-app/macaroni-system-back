@@ -5,7 +5,7 @@ import { InventoryTransactionType } from '../schemas/inventoryTransactions'
 export const inventoryTransactionService = {
   getAll: (options: FilterQuery<InventoryTransactionType>) => {
     try {
-      return InventoryTransaction.find({ ...options }).populate('asset').sort({ createdAt: -1 })
+      return InventoryTransaction.find({ ...options }).populate('asset').populate('createdBy', ['firstName', 'lastName']).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
