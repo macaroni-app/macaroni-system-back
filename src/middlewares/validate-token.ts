@@ -8,6 +8,7 @@ export interface UserPayload {
   lastName: string
   email: string
   id: string
+  roles: string[]
 }
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
@@ -22,11 +23,11 @@ const verifyToken = async (req: Request, res: Response, next: NextFunction): Pro
       message: ACCESS_DENIED
     })
   }
-
   try {
     const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
     const verified = jwt.verify(token, ACCESS_TOKEN_SECRET) as UserPayload
     req.user = verified
+    req.roles = verified.roles
     next()
   } catch (error) {
     return res.sendStatus(403)

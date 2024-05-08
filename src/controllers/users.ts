@@ -15,6 +15,7 @@ import {
   DUPLICATE_RECORD
   // INVALID_TOKEN
 } from '../labels/labels'
+import Role from '../models/roles'
 
 const usersController = {
   getAll: async (_req: Request, res: Response) => {
@@ -62,12 +63,15 @@ const usersController = {
 
     const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
 
+    const roles = Object.values(foundUser.roles).filter(Boolean)
+
     const accessToken = jwt.sign(
       {
         firstName: foundUser.firstName,
         lastName: foundUser.lastName,
         email: foundUser.email,
-        id: foundUser.id
+        id: foundUser.id,
+        roles
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '1d' }
@@ -141,12 +145,15 @@ const usersController = {
       }
     }
 
+    const roles = Object.values(foundUser.roles).filter(Boolean)
+
     const accessToken = jwt.sign(
       {
         firstName: decoded?.firstName,
         lastName: decoded?.lastName,
         email: decoded?.email,
-        id: decoded?.id
+        id: decoded?.id,
+        roles
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '15m' }
@@ -217,7 +224,18 @@ const usersController = {
       return res.sendStatus(409)
     }
 
-    await userService.store({ ...req.body })
+    const newUser = { ...req.body }
+
+    // agregra roles
+    if (req.body.roles !== undefined && req.body.roles !== null) {
+      const foundRoles = await Role.find({ code: { $in: req.body.roles } })
+      newUser.roles = foundRoles.map(role => role._id)
+    } else {
+      const role = await Role.findOne({ code: 2001 })
+      newUser.roles = [role?._id]
+    }
+
+    await userService.store(newUser)
 
     return res.sendStatus(201)
   },

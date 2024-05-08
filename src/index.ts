@@ -6,6 +6,8 @@ import morgan from 'morgan'
 import corsOptions from './config/corsOptions'
 import './database'
 
+import { createRoles } from './libs/initialSetup'
+
 // import routes
 import usersRouter from './routes/users'
 import assetsRouter from './routes/assets'
@@ -25,6 +27,9 @@ import credentials from './middlewares/credentials'
 
 // app instance
 const app = express()
+
+// creating roles if there isnt
+void createRoles()
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement

@@ -1,10 +1,11 @@
-import { model, Schema, Document } from 'mongoose'
+import { model, Schema, Document, SchemaTypes } from 'mongoose'
 import bcrypt from 'bcrypt'
 
 export interface IUser extends Document {
   firstName: string
   lastName: string
   password: string
+  roles: string[]
   email: string
   refreshToken: string
   isDeleted: boolean
@@ -32,6 +33,10 @@ const userSchema = new Schema({
     required: true,
     minLength: 6
   },
+  roles: [{
+    type: SchemaTypes.ObjectId,
+    ref: 'role'
+  }],
   email: {
     type: String,
     required: true,

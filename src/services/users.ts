@@ -23,6 +23,7 @@ export const userService = {
       anUser.lastName = newUser.lastName
       anUser.password = newUser.password
       anUser.email = newUser.email
+      anUser.roles = newUser.roles
 
       return await anUser.save()
     } catch (error) {
