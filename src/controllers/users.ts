@@ -63,7 +63,11 @@ const usersController = {
 
     const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
 
-    const roles = Object.values(foundUser.roles).filter(Boolean)
+    const rolIds = Object.values(foundUser.roles).filter(Boolean)
+
+    const roles = await Role.find({ _id: { $in: rolIds } })
+
+    const roleCodes = roles.map(role => role.code)
 
     const accessToken = jwt.sign(
       {
@@ -71,7 +75,7 @@ const usersController = {
         lastName: foundUser.lastName,
         email: foundUser.email,
         id: foundUser.id,
-        roles
+        roles: roleCodes
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '1d' }
@@ -110,7 +114,7 @@ const usersController = {
       sameSite: 'none'
     })
 
-    return res.json({ accessToken })
+    return res.json({ accessToken, roles: roleCodes })
   },
   refreshToken: async (req: Request, res: Response): Promise<Response> => {
     const cookies = req.cookies
@@ -145,7 +149,11 @@ const usersController = {
       }
     }
 
-    const roles = Object.values(foundUser.roles).filter(Boolean)
+    const rolIds = Object.values(foundUser.roles).filter(Boolean)
+
+    const roles = await Role.find({ _id: { $in: rolIds } })
+
+    const roleCodes = roles.map(role => role.code)
 
     const accessToken = jwt.sign(
       {
@@ -153,12 +161,12 @@ const usersController = {
         lastName: decoded?.lastName,
         email: decoded?.email,
         id: decoded?.id,
-        roles
+        roles: roleCodes
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '15m' }
     )
-    return res.json({ accessToken })
+    return res.json({ accessToken, roles: roleCodes })
   },
   logout: async (req: Request, res: Response): Promise<Response> => {
     // on client, also delete the accessToken
