@@ -14,6 +14,7 @@ export interface ISale extends Document {
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
+  sortingDate: Date
   deletedAt: Date
   createdBy: string
   updatedBy: string
@@ -45,10 +46,44 @@ const saleSchema = new Schema({
   createdAt: {
     type: Date,
     inmutable: true,
-    default: () => new Date()
+    default: () => {
+      const now = new Date().toLocaleString('es-MX', {
+        timeZone: 'America/Argentina/Buenos_Aires'
+      })
+      const dateWithoutTime = now.split(',')[0]
+
+      const day = dateWithoutTime.split('/')[0]
+      const month = dateWithoutTime.split('/')[1]
+      const year = dateWithoutTime.split('/')[2]
+
+      const dateToSave = new Date(`${month}/${day}/${year}`)
+      dateToSave.setHours(12, 0, 0, 0)
+
+      return dateToSave
+    }
   },
   updatedAt: {
     type: Date,
+    default: () => {
+      const now = new Date().toLocaleString('es-MX', {
+        timeZone: 'America/Argentina/Buenos_Aires'
+      })
+      const dateWithoutTime = now.split(',')[0]
+
+      const day = dateWithoutTime.split('/')[0]
+      const month = dateWithoutTime.split('/')[1]
+      const year = dateWithoutTime.split('/')[2]
+
+      const dateToSave = new Date(`${month}/${day}/${year}`)
+
+      dateToSave.setHours(12, 0, 0, 0)
+
+      return dateToSave
+    }
+  },
+  sortingDate: {
+    type: Date,
+    inmutable: true,
     default: () => new Date()
   },
   deletedAt: {
