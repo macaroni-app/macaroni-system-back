@@ -126,7 +126,7 @@ const clientsController = {
 
     return res.status(200).json({
       status: 200,
-      isUpdated: true,
+      isDeactivated: true,
       data: clientsUpdated
     })
   }
