@@ -4,7 +4,7 @@ import categoryController from '../controllers/categories'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateCategorySchema, DeleteCategorySchema, GetCategorySchema, UpdateCategorySchema, UpdateCategoryParamsType, UpdateCategoryBodyType, DeleteCategoryParamsType } from '../schemas/categories'
+import { CreateCategorySchema, DeleteCategorySchema, GetCategorySchema, UpdateCategorySchema, UpdateCategoryParamsType, UpdateCategoryBodyType, DeleteCategoryParamsType, ChangeIsActiveCategorySchema, ChangeIsActiveCategoryParamsType, ChangeIsActiveCategoryBodyType } from '../schemas/categories'
 
 import verifyRole from '../middlewares/verifyRoles'
 import { RoleCodes } from '../config/rolesCodes'
@@ -25,5 +25,8 @@ categoriesRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(RoleCode
 
 // DELETE - http://localhost:3000/api/v1/categories/:id
 categoriesRouter.delete('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(DeleteCategorySchema)], categoryController.delete as RequestHandler<DeleteCategoryParamsType, {}, {}, {}>)
+
+// PUT - http://localhost:3000/api/v1/categories/soft-delete/:id
+categoriesRouter.put('/soft-delete/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SELLER), schemaValidator(ChangeIsActiveCategorySchema)], categoryController.changeIsActive as RequestHandler<ChangeIsActiveCategoryParamsType, {}, ChangeIsActiveCategoryBodyType, {}>)
 
 export default categoriesRouter

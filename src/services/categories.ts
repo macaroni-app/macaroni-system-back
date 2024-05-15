@@ -40,5 +40,15 @@ export const categoryService = {
     } catch (error) {
       return error
     }
+  },
+  updateIsActive: async (id: string, isActive: boolean) => {
+    try {
+      const category = await Category.findOne({ _id: id }) as CategoryType
+      category.isActive = isActive
+
+      return await Category.updateOne({ _id: id }, { $set: { ...category } })
+    } catch (error) {
+      return error
+    }
   }
 }

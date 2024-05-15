@@ -26,7 +26,7 @@ clientsRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.A
 // DELETE - http://localhost:3000/api/v1/clients/:id
 clientsRouter.delete('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(DeleteClientSchema)], clientController.delete as RequestHandler<DeleteClientParamsType, {}, {}, {}>)
 
-// PUT - http://localhost:3000/api/v1/clients/:id
+// PUT - http://localhost:3000/api/v1/clients/soft-delete/:id
 clientsRouter.put('/soft-delete/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SELLER), schemaValidator(ChangeIsActiveClientSchema)], clientController.changeIsActive as RequestHandler<ChangeIsActiveClientParamsType, {}, ChangeIsActiveClientBodyType, {}>)
 
 export default clientsRouter

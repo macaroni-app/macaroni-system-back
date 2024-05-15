@@ -139,12 +139,12 @@ const clientsController = {
       })
     }
 
-    const clientsUpdated = await clientService.updateIsActive(id, req.body.isActive)
+    const clientUpdated = await clientService.updateIsActive(id, req.body.isActive)
 
     return res.status(200).json({
       status: 200,
       isUpdated: true,
-      data: clientsUpdated
+      data: clientUpdated
     })
   }
 }

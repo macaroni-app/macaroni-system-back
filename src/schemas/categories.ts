@@ -37,6 +37,15 @@ export const DeleteCategorySchema = z.object({
   })
 })
 
+export const ChangeIsActiveCategorySchema = z.object({
+  body: z.object({
+    isActive: z.boolean().optional()
+  }),
+  params: z.object({
+    id: z.string().min(24).max(24)
+  })
+})
+
 export type CategoryType = z.infer<typeof CategorySchema>
 export type CreateCategoryBodyType = z.infer<typeof CreateCategorySchema>['body']
 export type UpdateCategoryBodyType = z.infer<typeof UpdateCategorySchema>['body']
@@ -44,3 +53,5 @@ export type UpdateCategoryParamsType = z.infer<typeof UpdateCategorySchema>['par
 export type GetCategoryParamsType = z.infer<typeof GetCategorySchema>['params']
 export type GetCategoryQueryType = z.infer<typeof GetCategorySchema>['query']
 export type DeleteCategoryParamsType = z.infer<typeof DeleteCategorySchema>['params']
+export type ChangeIsActiveCategoryBodyType = z.infer<typeof ChangeIsActiveCategorySchema>['body']
+export type ChangeIsActiveCategoryParamsType = z.infer<typeof ChangeIsActiveCategorySchema>['params']
