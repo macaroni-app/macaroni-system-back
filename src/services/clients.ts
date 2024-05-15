@@ -41,5 +41,15 @@ export const clientService = {
     } catch (error) {
       return error
     }
+  },
+  deactivate: async (id: string) => {
+    try {
+      const client = await Client.findOne({ _id: id }) as ClientType
+      client.isActive = false
+
+      return await Client.updateOne({ _id: id }, { $set: { ...client } })
+    } catch (error) {
+      return error
+    }
   }
 }

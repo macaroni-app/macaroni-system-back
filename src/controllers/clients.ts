@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { clientService } from '../services/clients'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { ClientType, CreateClientBodyType, DeleteClientParamsType, GetClientParamsType, GetClientQueryType, UpdateClientBodyType, UpdateClientParamsType } from '../schemas/clients'
+import { ClientType, CreateClientBodyType, DeactivateClientParamsType, DeleteClientParamsType, GetClientParamsType, GetClientQueryType, UpdateClientBodyType, UpdateClientParamsType } from '../schemas/clients'
 
 const clientsController = {
   getAll: async (req: Request<{}, {}, {}, GetClientQueryType>, res: Response): Promise<Response> => {
@@ -64,7 +64,7 @@ const clientsController = {
 
     const clientDeleted = await clientService.delete(id)
 
-    if (clientDeleted === null && clientDeleted === undefined) {
+    if (clientDeleted === null || clientDeleted === undefined) {
       return res.status(404).json({
         status: 404,
         isDeleted: false,
@@ -91,7 +91,7 @@ const clientsController = {
 
     const oldClient = await clientService.getOne({ _id: id })
 
-    if (oldClient === null && oldClient === undefined) {
+    if (oldClient === null || oldClient === undefined) {
       return res.status(404).json({
         status: 404,
         isUpdated: false,
@@ -102,6 +102,27 @@ const clientsController = {
     const newClientData = { ...oldClient._doc, ...req.body }
 
     const clientsUpdated = await clientService.update(id, newClientData)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data: clientsUpdated
+    })
+  },
+  deactivate: async (req: Request<DeactivateClientParamsType, {}, {}, {}>, res: Response): Promise<Response> => {
+    const { id } = req.params
+
+    const oldClient = await clientService.getOne({ _id: id })
+
+    if (oldClient === null || oldClient === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    const clientsUpdated = await clientService.deactivate(id)
 
     return res.status(200).json({
       status: 200,

@@ -64,7 +64,7 @@ const categoryController = {
 
     const categoryDeleted = await categoryService.delete(id)
 
-    if (categoryDeleted === null && categoryDeleted === undefined) {
+    if (categoryDeleted === null || categoryDeleted === undefined) {
       return res.status(404).json({
         status: 404,
         isDeleted: false,
@@ -91,7 +91,7 @@ const categoryController = {
 
     const oldCategory = await categoryService.getOne({ _id: id })
 
-    if (oldCategory === null && oldCategory === undefined) {
+    if (oldCategory === null || oldCategory === undefined) {
       return res.status(404).json({
         status: 404,
         isUpdated: false,

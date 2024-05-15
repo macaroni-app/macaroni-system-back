@@ -64,7 +64,7 @@ const productTypeController = {
 
     const productTypeDeleted = await productTypeService.delete(id)
 
-    if (productTypeDeleted === null && productTypeDeleted === undefined) {
+    if (productTypeDeleted === null || productTypeDeleted === undefined) {
       return res.status(404).json({
         status: 404,
         isDeleted: false,
@@ -91,7 +91,7 @@ const productTypeController = {
 
     const oldProductType = await productTypeService.getOne({ _id: id })
 
-    if (oldProductType === null && oldProductType === undefined) {
+    if (oldProductType === null || oldProductType === undefined) {
       return res.status(404).json({
         status: 404,
         isUpdated: false,
