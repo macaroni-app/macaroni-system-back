@@ -4,7 +4,7 @@ import clientController from '../controllers/clients'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateClientSchema, DeleteClientSchema, GetClientSchema, UpdateClientSchema, UpdateClientParamsType, UpdateClientBodyType, DeleteClientParamsType, DeactivateClientSchema, DeactivateClientParamsType } from '../schemas/clients'
+import { CreateClientSchema, DeleteClientSchema, GetClientSchema, UpdateClientSchema, UpdateClientParamsType, UpdateClientBodyType, DeleteClientParamsType, ChangeIsActiveClientSchema, ChangeIsActiveClientParamsType, ChangeIsActiveClientBodyType } from '../schemas/clients'
 
 import verifyRole from '../middlewares/verifyRoles'
 import { RoleCodes } from '../config/rolesCodes'
@@ -27,6 +27,6 @@ clientsRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.A
 clientsRouter.delete('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(DeleteClientSchema)], clientController.delete as RequestHandler<DeleteClientParamsType, {}, {}, {}>)
 
 // PUT - http://localhost:3000/api/v1/clients/:id
-clientsRouter.put('/deactivate/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SELLER), schemaValidator(DeactivateClientSchema)], clientController.deactivate as RequestHandler<DeactivateClientParamsType, {}, {}, {}>)
+clientsRouter.put('/soft-delete/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SELLER), schemaValidator(ChangeIsActiveClientSchema)], clientController.changeIsActive as RequestHandler<ChangeIsActiveClientParamsType, {}, ChangeIsActiveClientBodyType, {}>)
 
 export default clientsRouter
