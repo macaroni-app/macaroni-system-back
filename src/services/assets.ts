@@ -42,5 +42,15 @@ export const assetService = {
     } catch (error) {
       return error
     }
+  },
+  updateIsActive: async (id: string, isActive: boolean) => {
+    try {
+      const asset = await Asset.findOne({ _id: id }) as AssetType
+      asset.isActive = isActive
+
+      return await Asset.updateOne({ _id: id }, { $set: { ...asset } })
+    } catch (error) {
+      return error
+    }
   }
 }

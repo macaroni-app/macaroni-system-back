@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { assetService } from '../services/assets'
 import { IAsset } from '../models/assets'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateAssetBodyType, DeleteAssetParamsType, GetAssetParamsType, GetAssetQueryType, AssetType, UpdateAssetBodyType, UpdateAssetParamsType } from '../schemas/assets'
+import { CreateAssetBodyType, DeleteAssetParamsType, GetAssetParamsType, GetAssetQueryType, AssetType, UpdateAssetBodyType, UpdateAssetParamsType, ChangeIsActiveAssetParamsType, ChangeIsActiveAssetBodyType } from '../schemas/assets'
 
 const assetsController = {
   getAll: async (req: Request<{}, {}, {}, GetAssetQueryType>, res: Response): Promise<Response> => {
@@ -116,6 +116,44 @@ const assetsController = {
       status: 200,
       isUpdated: true,
       data: assetsUpdated
+    })
+  },
+  changeIsActive: async (req: Request<ChangeIsActiveAssetParamsType, {}, ChangeIsActiveAssetBodyType, {}>, res: Response): Promise<Response> => {
+    const { id } = req.params
+
+    if (req.body.isActive === null || req.body.isActive === undefined) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const oldAsset: AssetType = await assetService.getOne({ _id: id })
+
+    if (oldAsset === null || oldAsset === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    if (oldAsset.isActive === req.body.isActive) {
+      const status = req.body.isActive ? '"Activo"' : '"Inactivo"'
+      return res.status(404).json({
+        status: 400,
+        isUpdated: false,
+        message: 'Ya se encuentra en el estado ' + status
+      })
+    }
+
+    const assetUpdated = await assetService.updateIsActive(id, req.body.isActive)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data: assetUpdated
     })
   }
 }

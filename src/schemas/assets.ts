@@ -39,6 +39,15 @@ export const DeleteAssetSchema = z.object({
   })
 })
 
+export const ChangeIsActiveAssetSchema = z.object({
+  body: z.object({
+    isActive: z.boolean().optional()
+  }),
+  params: z.object({
+    id: z.string().min(24).max(24)
+  })
+})
+
 export type AssetType = z.infer<typeof AssetSchema>
 export type CreateAssetBodyType = z.infer<typeof CreateAssetSchema>['body']
 export type UpdateAssetBodyType = z.infer<typeof UpdateAssetSchema>['body']
@@ -46,3 +55,5 @@ export type UpdateAssetParamsType = z.infer<typeof UpdateAssetSchema>['params']
 export type GetAssetParamsType = z.infer<typeof GetAssetSchema>['params']
 export type GetAssetQueryType = z.infer<typeof GetAssetSchema>['query']
 export type DeleteAssetParamsType = z.infer<typeof DeleteAssetSchema>['params']
+export type ChangeIsActiveAssetBodyType = z.infer<typeof ChangeIsActiveAssetSchema>['body']
+export type ChangeIsActiveAssetParamsType = z.infer<typeof ChangeIsActiveAssetSchema>['params']
