@@ -37,6 +37,15 @@ export const DeleteMethodPaymentsSchema = z.object({
   })
 })
 
+export const ChangeIsActiveMethodPaymentSchema = z.object({
+  body: z.object({
+    isActive: z.boolean().optional()
+  }),
+  params: z.object({
+    id: z.string().min(24).max(24)
+  })
+})
+
 export type MethodPaymentsType = z.infer<typeof MethodPaymentsSchema>
 export type CreateMethodPaymentsBodyType = z.infer<typeof CreateMethodPaymentsSchema>['body']
 export type UpdateMethodPaymentsBodyType = z.infer<typeof UpdateMethodPaymentsSchema>['body']
@@ -44,3 +53,5 @@ export type UpdateMethodPaymentsParamsType = z.infer<typeof UpdateMethodPayments
 export type GetMethodPaymentsParamsType = z.infer<typeof GetMethodPaymentsSchema>['params']
 export type GetMethodPaymentsQueryType = z.infer<typeof GetMethodPaymentsSchema>['query']
 export type DeleteMethodPaymentsParamsType = z.infer<typeof DeleteMethodPaymentsSchema>['params']
+export type ChangeIsActiveMethodPaymentBodyType = z.infer<typeof ChangeIsActiveMethodPaymentSchema>['body']
+export type ChangeIsActiveMethodPaymentParamsType = z.infer<typeof ChangeIsActiveMethodPaymentSchema>['params']

@@ -43,5 +43,15 @@ export const methodPaymentService = {
     } catch (error) {
       return error
     }
+  },
+  updateIsActive: async (id: string, isActive: boolean) => {
+    try {
+      const methodPayment = await MethodPayment.findOne({ _id: id }) as MethodPaymentsType
+      methodPayment.isActive = isActive
+
+      return await MethodPayment.updateOne({ _id: id }, { $set: { ...methodPayment } })
+    } catch (error) {
+      return error
+    }
   }
 }

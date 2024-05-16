@@ -4,7 +4,7 @@ import methodPaymentController from '../controllers/paymentMethods'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateMethodPaymentsSchema, DeleteMethodPaymentsParamsType, DeleteMethodPaymentsSchema, GetMethodPaymentsSchema, UpdateMethodPaymentsBodyType, UpdateMethodPaymentsParamsType, UpdateMethodPaymentsSchema } from '../schemas/methodPayments'
+import { ChangeIsActiveMethodPaymentBodyType, ChangeIsActiveMethodPaymentParamsType, ChangeIsActiveMethodPaymentSchema, CreateMethodPaymentsSchema, DeleteMethodPaymentsParamsType, DeleteMethodPaymentsSchema, GetMethodPaymentsSchema, UpdateMethodPaymentsBodyType, UpdateMethodPaymentsParamsType, UpdateMethodPaymentsSchema } from '../schemas/methodPayments'
 
 import verifyRole from '../middlewares/verifyRoles'
 import { RoleCodes } from '../config/rolesCodes'
@@ -25,5 +25,8 @@ methodPaymentRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(RoleC
 
 // DELETE - http://localhost:3000/api/v1/methodPayments/:id
 methodPaymentRouter.delete('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(DeleteMethodPaymentsSchema)], methodPaymentController.delete as RequestHandler<DeleteMethodPaymentsParamsType, {}, {}, {}>)
+
+// PUT - http://localhost:3000/api/v1/methodPayments/soft-delete/:id
+methodPaymentRouter.put('/soft-delete/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SELLER), schemaValidator(ChangeIsActiveMethodPaymentSchema)], methodPaymentController.changeIsActive as RequestHandler<ChangeIsActiveMethodPaymentParamsType, {}, ChangeIsActiveMethodPaymentBodyType, {}>)
 
 export default methodPaymentRouter

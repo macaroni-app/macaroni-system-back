@@ -1,7 +1,7 @@
 import { Response, Request } from 'express'
 import { methodPaymentService } from '../services/paymentMethods'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateMethodPaymentsBodyType, DeleteMethodPaymentsParamsType, GetMethodPaymentsParamsType, GetMethodPaymentsQueryType, MethodPaymentsType, UpdateMethodPaymentsBodyType, UpdateMethodPaymentsParamsType } from '../schemas/methodPayments'
+import { ChangeIsActiveMethodPaymentBodyType, ChangeIsActiveMethodPaymentParamsType, CreateMethodPaymentsBodyType, DeleteMethodPaymentsParamsType, GetMethodPaymentsParamsType, GetMethodPaymentsQueryType, MethodPaymentsType, UpdateMethodPaymentsBodyType, UpdateMethodPaymentsParamsType } from '../schemas/methodPayments'
 
 const methodPaymentController = {
   getAll: async (req: Request<{}, {}, {}, GetMethodPaymentsQueryType>, res: Response): Promise<Response> => {
@@ -112,6 +112,44 @@ const methodPaymentController = {
       status: 200,
       isUpdated: true,
       data: methodPaymentsUpdated
+    })
+  },
+  changeIsActive: async (req: Request<ChangeIsActiveMethodPaymentParamsType, {}, ChangeIsActiveMethodPaymentBodyType, {}>, res: Response): Promise<Response> => {
+    const { id } = req.params
+
+    if (req.body.isActive === null || req.body.isActive === undefined) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const oldMethodPayment: MethodPaymentsType = await methodPaymentService.getOne({ _id: id })
+
+    if (oldMethodPayment === null || oldMethodPayment === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    if (oldMethodPayment.isActive === req.body.isActive) {
+      const status = req.body.isActive ? '"Activo"' : '"Inactivo"'
+      return res.status(404).json({
+        status: 400,
+        isUpdated: false,
+        message: 'Ya se encuentra en el estado ' + status
+      })
+    }
+
+    const methodPaymentUpdated = await methodPaymentService.updateIsActive(id, req.body.isActive)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data: methodPaymentUpdated
     })
   }
 }
