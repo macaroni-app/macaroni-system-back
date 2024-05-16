@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { productsService } from '../services/products'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateProductBodyType, DeleteProductParamsType, GetProductParamsType, GetProductQueryType, ProductType, UpdateProductBodyType, UpdateProductParamsType } from '../schemas/products'
+import { ChangeIsActiveProductBodyType, ChangeIsActiveProductParamsType, CreateProductBodyType, DeleteProductParamsType, GetProductParamsType, GetProductQueryType, ProductType, UpdateProductBodyType, UpdateProductParamsType } from '../schemas/products'
 
 const productsController = {
   getAll: async (req: Request<{}, {}, {}, GetProductQueryType>, res: Response): Promise<Response> => {
@@ -113,6 +113,44 @@ const productsController = {
       status: 200,
       isUpdated: true,
       data: productsUpdated
+    })
+  },
+  changeIsActive: async (req: Request<ChangeIsActiveProductParamsType, {}, ChangeIsActiveProductBodyType, {}>, res: Response): Promise<Response> => {
+    const { id } = req.params
+
+    if (req.body.isActive === null || req.body.isActive === undefined) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const oldProduct: ProductType = await productsService.getOne({ _id: id })
+
+    if (oldProduct === null || oldProduct === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    if (oldProduct.isActive === req.body.isActive) {
+      const status = req.body.isActive ? '"Activo"' : '"Inactivo"'
+      return res.status(404).json({
+        status: 400,
+        isUpdated: false,
+        message: 'Ya se encuentra en el estado ' + status
+      })
+    }
+
+    const productUpdated = await productsService.updateIsActive(id, req.body.isActive)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data: productUpdated
     })
   }
 }

@@ -42,6 +42,15 @@ export const DeleteProductSchema = z.object({
   })
 })
 
+export const ChangeIsActiveProductSchema = z.object({
+  body: z.object({
+    isActive: z.boolean().optional()
+  }),
+  params: z.object({
+    id: z.string().min(24).max(24)
+  })
+})
+
 export type ProductType = z.infer<typeof ProductSchema>
 export type CreateProductBodyType = z.infer<typeof CreateProductSchema>['body']
 export type UpdateProductBodyType = z.infer<typeof UpdateProductSchema>['body']
@@ -49,3 +58,5 @@ export type UpdateProductParamsType = z.infer<typeof UpdateProductSchema>['param
 export type GetProductParamsType = z.infer<typeof GetProductSchema>['params']
 export type GetProductQueryType = z.infer<typeof GetProductSchema>['query']
 export type DeleteProductParamsType = z.infer<typeof DeleteProductSchema>['params']
+export type ChangeIsActiveProductBodyType = z.infer<typeof ChangeIsActiveProductSchema>['body']
+export type ChangeIsActiveProductParamsType = z.infer<typeof ChangeIsActiveProductSchema>['params']
