@@ -40,5 +40,15 @@ export const productTypeService = {
     } catch (error) {
       return error
     }
+  },
+  updateIsActive: async (id: string, isActive: boolean) => {
+    try {
+      const productType = await ProductType.findOne({ _id: id }) as ProductTypeType
+      productType.isActive = isActive
+
+      return await ProductType.updateOne({ _id: id }, { $set: { ...productType } })
+    } catch (error) {
+      return error
+    }
   }
 }

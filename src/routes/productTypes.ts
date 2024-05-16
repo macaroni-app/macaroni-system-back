@@ -4,7 +4,7 @@ import productTypeController from '../controllers/productTypes'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateProductTypeSchema, DeleteProductTypeSchema, GetProductTypeSchema, UpdateProductTypeSchema, UpdateProductTypeParamsType, UpdateProductTypeBodyType, DeleteProductTypeParamsType } from '../schemas/productTypes'
+import { CreateProductTypeSchema, DeleteProductTypeSchema, GetProductTypeSchema, UpdateProductTypeSchema, UpdateProductTypeParamsType, UpdateProductTypeBodyType, DeleteProductTypeParamsType, ChangeIsActiveProductTypeSchema, ChangeIsActiveProductTypeParamsType, ChangeIsActiveProductTypeBodyType } from '../schemas/productTypes'
 
 import verifyRole from '../middlewares/verifyRoles'
 import { RoleCodes } from '../config/rolesCodes'
@@ -25,5 +25,8 @@ productTypesRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(RoleCo
 
 // DELETE - http://localhost:3000/api/v1/productTypes/:id
 productTypesRouter.delete('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(DeleteProductTypeSchema)], productTypeController.delete as RequestHandler<DeleteProductTypeParamsType, {}, {}, {}>)
+
+// PUT - http://localhost:3000/api/v1/productTypes/soft-delete/:id
+productTypesRouter.put('/soft-delete/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SELLER), schemaValidator(ChangeIsActiveProductTypeSchema)], productTypeController.changeIsActive as RequestHandler<ChangeIsActiveProductTypeParamsType, {}, ChangeIsActiveProductTypeBodyType, {}>)
 
 export default productTypesRouter
