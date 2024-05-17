@@ -5,7 +5,7 @@ import { SaleType } from '../schemas/sales'
 export const salesService = {
   getAll: (options: FilterQuery<SaleType>) => {
     try {
-      return Sale.find({ ...options }).populate('client').populate('paymentMethod').sort({ sortingDate: -1 })
+      return Sale.find({ ...options }).populate('client').populate('paymentMethod').populate('createdBy', ['firstName', 'lastName']).sort({ sortingDate: -1 })
     } catch (error) {
       return error
     }
