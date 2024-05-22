@@ -5,7 +5,7 @@ import { SaleItemType } from '../schemas/saleItems'
 export const saleItemsService = {
   getAll: (options: FilterQuery<SaleItemType>) => {
     try {
-      return SaleItem.find({ ...options }).populate('product').populate('sale').sort({ createdAt: -1 })
+      return SaleItem.find({ ...options }).populate({ path: 'product', populate: { path: 'productType', select: 'name' } }).populate('sale').sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
