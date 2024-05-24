@@ -13,6 +13,9 @@ usersRouter.get('/refresh', usersController.refreshToken as RequestHandler)
 usersRouter.post('/register', usersController.store as RequestHandler)
 // PUT - http://localhost:3000/api/v1/users/soft-delete/:id
 usersRouter.put('/soft-delete/:id', [verifyToken as RequestHandler], usersController.changeIsActive as RequestHandler)
+// DELETE - http://localhost:3000/api/v1/users/:id
+usersRouter.delete('/:id', [verifyToken as RequestHandler], usersController.delete as RequestHandler)
+
 // usersRouter.put("/recovery-password", usersController.recoverPassword);
 // usersRouter.put('/new-password', usersController.newPassword)
 

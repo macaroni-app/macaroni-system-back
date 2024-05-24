@@ -328,6 +328,25 @@ const usersController = {
       isUpdated: true,
       data: userUpdated
     })
+  },
+  delete: async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params
+
+    const userDeleted = await userService.delete(id)
+
+    if (userDeleted === null || userDeleted === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isDeleted: false,
+        message: NOT_FOUND
+      })
+    }
+
+    return res.status(200).json({
+      status: 200,
+      isDeleted: true,
+      data: userDeleted
+    })
   }
   // recoverPassword: async (req, res) => {
   //   const { email } = req.body;

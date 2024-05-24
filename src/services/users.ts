@@ -5,7 +5,7 @@ import { UserType } from '../schemas/users'
 export const userService = {
   getAll: () => {
     try {
-      return User.find({})
+      return User.find({ }).select('_id firstName lastName email createdAt isActive').populate({ path: 'roles', select: 'name' }).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
@@ -27,6 +27,13 @@ export const userService = {
       anUser.roles = newUser.roles
 
       return await anUser.save()
+    } catch (error) {
+      return error
+    }
+  },
+  delete: (id: string) => {
+    try {
+      return User.deleteOne({ _id: id })
     } catch (error) {
       return error
     }
