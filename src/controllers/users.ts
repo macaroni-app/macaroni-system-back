@@ -16,6 +16,7 @@ import {
   // INVALID_TOKEN
 } from '../labels/labels'
 import Role from '../models/roles'
+import { UserType } from '../schemas/users'
 
 const usersController = {
   getAll: async (_req: Request, res: Response) => {
@@ -245,7 +246,10 @@ const usersController = {
 
     await userService.store(newUser)
 
-    return res.sendStatus(201)
+    return res.status(201).json({
+      status: 201,
+      isStored: true
+    })
   },
   update: async (req: Request, res: Response): Promise<Response> => {
     if (
@@ -285,6 +289,44 @@ const usersController = {
       status: 201,
       isUpdated: true,
       data: updateUser !== 0 ? id : null
+    })
+  },
+  changeIsActive: async (req: Request, res: Response): Promise<Response> => {
+    const { id } = req.params
+
+    if (req.body.isActive === null || req.body.isActive === undefined) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const oldUser: UserType = await userService.getOne({ _id: id })
+
+    if (oldUser === null || oldUser === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    if (oldUser.isActive === req.body.isActive) {
+      const status = req.body.isActive ? '"Activo"' : '"Inactivo"'
+      return res.status(404).json({
+        status: 400,
+        isUpdated: false,
+        message: 'Ya se encuentra en el estado ' + status
+      })
+    }
+
+    const userUpdated = await userService.updateIsActive(id, req.body.isActive)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data: userUpdated
     })
   }
   // recoverPassword: async (req, res) => {

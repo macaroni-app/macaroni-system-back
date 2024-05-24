@@ -1,5 +1,6 @@
 import { FilterQuery } from 'mongoose'
 import User, { IUser } from '../models/users'
+import { UserType } from '../schemas/users'
 
 export const userService = {
   getAll: () => {
@@ -9,7 +10,7 @@ export const userService = {
       return error
     }
   },
-  getOne: (credentials: FilterQuery<IUser> | undefined) => {
+  getOne: (credentials: FilterQuery<UserType> | undefined) => {
     try {
       return User.findOne({ ...credentials })
     } catch (error) {
@@ -30,11 +31,21 @@ export const userService = {
       return error
     }
   },
-  update: async (id: string, newUserData: IUser) => {
+  update: async (id: string, newUserData: UserType) => {
     try {
       const data = await User.updateOne({ _id: id }, newUserData)
 
       return data.modifiedCount
+    } catch (error) {
+      return error
+    }
+  },
+  updateIsActive: async (id: string, isActive: boolean) => {
+    try {
+      const user = await User.findOne({ _id: id }) as UserType
+      user.isActive = isActive
+
+      return await User.updateOne({ _id: id }, { $set: { ...user } })
     } catch (error) {
       return error
     }
