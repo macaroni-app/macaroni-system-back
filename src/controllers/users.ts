@@ -237,11 +237,11 @@ const usersController = {
 
     // agregra roles
     if (req.body.role !== undefined && req.body.role !== null) {
-      const foundRoles = await Role.find({ code: { $in: req.body.role } })
-      newUser.role = foundRoles.map(role => role._id)
+      const foundRole = await Role.findOne({ code: req.body.role })
+      newUser.role = foundRole?._id
     } else {
       const role = await Role.findOne({ code: 2001 })
-      newUser.role = [role?._id]
+      newUser.role = role?._id
     }
 
     await userService.store(newUser)
