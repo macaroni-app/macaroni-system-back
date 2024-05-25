@@ -19,8 +19,16 @@ import Role from '../models/roles'
 import { UserType } from '../schemas/users'
 
 const usersController = {
-  getAll: async (_req: Request, res: Response) => {
-    const users: IUser[] = await userService.getAll()
+  getAll: async (req: Request, res: Response) => {
+    const { id } = req.query
+
+    const filters = {
+      $expr: {
+        $and: [{ $eq: ['$_id', id] }]
+      }
+    }
+
+    const users: IUser[] = await userService.getAll((id !== null && id !== undefined) ? filters : {})
 
     return res.status(200).json({
       status: 200,
@@ -64,11 +72,7 @@ const usersController = {
 
     const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
 
-    const rolIds = Object.values(foundUser.roles).filter(Boolean)
-
-    const roles = await Role.find({ _id: { $in: rolIds } })
-
-    const roleCodes = roles.map(role => role.code)
+    const role = await Role.findOne({ _id: foundUser.role._id })
 
     const accessToken = jwt.sign(
       {
@@ -76,7 +80,7 @@ const usersController = {
         lastName: foundUser.lastName,
         email: foundUser.email,
         id: foundUser.id,
-        roles: roleCodes
+        role: role?.code
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '1d' }
@@ -115,7 +119,7 @@ const usersController = {
       sameSite: 'none'
     })
 
-    return res.json({ accessToken, roles: roleCodes })
+    return res.json({ accessToken, role: role?.code })
   },
   refreshToken: async (req: Request, res: Response): Promise<Response> => {
     const cookies = req.cookies
@@ -150,11 +154,7 @@ const usersController = {
       }
     }
 
-    const rolIds = Object.values(foundUser.roles).filter(Boolean)
-
-    const roles = await Role.find({ _id: { $in: rolIds } })
-
-    const roleCodes = roles.map(role => role.code)
+    const role = await Role.findOne({ _id: foundUser.role._id })
 
     const accessToken = jwt.sign(
       {
@@ -162,12 +162,12 @@ const usersController = {
         lastName: decoded?.lastName,
         email: decoded?.email,
         id: decoded?.id,
-        roles: roleCodes
+        role: role?.code
       },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '15m' }
     )
-    return res.json({ accessToken, roles: roleCodes })
+    return res.json({ accessToken, role: role?.code })
   },
   logout: async (req: Request, res: Response): Promise<Response> => {
     // on client, also delete the accessToken
@@ -236,12 +236,12 @@ const usersController = {
     const newUser = { ...req.body }
 
     // agregra roles
-    if (req.body.roles !== undefined && req.body.roles !== null) {
-      const foundRoles = await Role.find({ code: { $in: req.body.roles } })
-      newUser.roles = foundRoles.map(role => role._id)
+    if (req.body.role !== undefined && req.body.role !== null) {
+      const foundRoles = await Role.find({ code: { $in: req.body.role } })
+      newUser.role = foundRoles.map(role => role._id)
     } else {
       const role = await Role.findOne({ code: 2001 })
-      newUser.roles = [role?._id]
+      newUser.role = [role?._id]
     }
 
     await userService.store(newUser)

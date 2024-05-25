@@ -3,9 +3,9 @@ import User, { IUser } from '../models/users'
 import { UserType } from '../schemas/users'
 
 export const userService = {
-  getAll: () => {
+  getAll: (options: FilterQuery<UserType>) => {
     try {
-      return User.find({ }).select('_id firstName lastName email createdAt isActive').populate({ path: 'roles', select: 'name' }).sort({ createdAt: -1 })
+      return User.find({ ...options }).select('_id firstName lastName email createdAt isActive').populate({ path: 'role', select: 'name code' }).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
@@ -24,7 +24,7 @@ export const userService = {
       anUser.lastName = newUser.lastName
       anUser.password = newUser.password
       anUser.email = newUser.email
-      anUser.roles = newUser.roles
+      anUser.role = newUser.role
 
       return await anUser.save()
     } catch (error) {

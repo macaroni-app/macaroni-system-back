@@ -6,7 +6,7 @@ export const UserSchema = z.object({
   password: z.string().min(1).optional(),
   email: z.string().min(1).optional(),
   refreshToken: z.string().min(1).optional(),
-  roles: z.array(z.string().min(1)).optional(),
+  role: z.string().min(1).optional(),
   isDeleted: z.boolean().optional(),
   isActive: z.boolean().optional(),
   createdAt: z.date().optional(),

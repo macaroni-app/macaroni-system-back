@@ -5,7 +5,7 @@ export interface IUser extends Document {
   firstName: string
   lastName: string
   password: string
-  roles: string[]
+  role: string
   email: string
   refreshToken: string
   isDeleted: boolean
@@ -33,10 +33,10 @@ const userSchema = new Schema({
     required: true,
     minLength: 6
   },
-  roles: [{
+  role: {
     type: SchemaTypes.ObjectId,
     ref: 'role'
-  }],
+  },
   email: {
     type: String,
     required: true,
