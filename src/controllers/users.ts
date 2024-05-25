@@ -4,7 +4,7 @@ import { userService } from '../services/users'
 import { UserPayload } from '../middlewares/validate-token'
 import jwt from 'jsonwebtoken'
 
-// import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt'
 // import transporter from "../helpers/mailer.js";
 
 import {
@@ -280,9 +280,14 @@ const usersController = {
       }
     }
 
+    // // encriptamos
+    const jumps = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(req.body.password, jumps)
+
     const updateUser = await userService.update(id, {
       ...req.body,
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      password: hash
     })
 
     return res.status(201).json({
@@ -313,7 +318,7 @@ const usersController = {
     }
 
     if (oldUser.isActive === req.body.isActive) {
-      const status = req.body.isActive ? '"Activo"' : '"Inactivo"'
+      const status = req?.body?.isActive === true ? '"Activo"' : '"Inactivo"'
       return res.status(404).json({
         status: 400,
         isUpdated: false,
@@ -410,46 +415,46 @@ const usersController = {
   //   }
   // },
   // newPassword: async (req: Request, res: Response): Promise<Response> => {
-  //   if (!req.body.password || !req.body.confirmPassword || !req.body.token) {
+  //   if ((req.body.password === null && req.body.password === undefined) || (req.body.confirmPassword === null && req.body.confirmPassword !== undefined)) {
   //     return res.status(400).json({
   //       status: 400,
   //       isStored: false,
   //       message: MISSING_FIELDS_REQUIRED
   //     })
   //   }
-  //   const { token } = req.body
+  // const { token } = req.body
 
-  //   if (!token) {
-  //     return res.status(401).json({
-  //       status: 401,
-  //       message: ACCESS_DENIED
-  //     })
-  //   }
-
-  //   try {
-  //     const verified = jwt.verify(token, process.env.RESET_TOKEN_SECRET)
-  //   } catch (error) {
-  //     return res.status(400).json({
-  //       status: 400,
-  //       message: INVALID_TOKEN
-  //     })
-  //   }
-
-  //   const user = await userService.getOne({ resetToken: token })
-
-  //   // encriptamos
-  //   const jumps = await bcrypt.genSalt(10)
-  //   const hash = await bcrypt.hash(req.body.password, jumps)
-
-  //   const updateUser = await userService.update(user._id, {
-  //     password: hash,
-  //     updatedAt: new Date()
+  // if (!token) {
+  //   return res.status(401).json({
+  //     status: 401,
+  //     message: ACCESS_DENIED
   //   })
+  // }
 
-  //   return res.status(201).json({
-  //     status: 201,
-  //     isUpdated: true
+  // try {
+  //   const verified = jwt.verify(token, process.env.RESET_TOKEN_SECRET)
+  // } catch (error) {
+  //   return res.status(400).json({
+  //     status: 400,
+  //     message: INVALID_TOKEN
   //   })
+  // }
+
+  // const user = await userService.getOne({ resetToken: token })
+
+  // // encriptamos
+  // const jumps = await bcrypt.genSalt(10)
+  // const hash = await bcrypt.hash(req.body.password, jumps)
+
+  // const updateUser = await userService.update(user._id, {
+  //   password: hash,
+  //   updatedAt: new Date()
+  // })
+
+  // return res.status(201).json({
+  //   status: 201,
+  //   isUpdated: true
+  // })
   // }
 }
 
