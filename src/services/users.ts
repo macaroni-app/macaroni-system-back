@@ -5,7 +5,7 @@ import { UserType } from '../schemas/users'
 export const userService = {
   getAll: (options: FilterQuery<UserType>) => {
     try {
-      return User.find({ ...options }).select('_id firstName lastName email createdAt isActive').populate({ path: 'role', select: 'name code' }).sort({ sortingDate: -1 })
+      return User.find({ ...options }).select('_id firstName lastName email password createdAt isActive').populate({ path: 'role', select: 'name code' }).sort({ sortingDate: -1 })
     } catch (error) {
       return error
     }

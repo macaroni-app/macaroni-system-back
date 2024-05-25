@@ -21,6 +21,7 @@ import categoriesRouter from './routes/categories'
 import productTypesRouter from './routes/productTypes'
 import methodPaymentRouter from './routes/paymentMethods'
 import saleItemsRouter from './routes/saleItems'
+import rolesRouter from './routes/roles'
 
 // middlewares
 import credentials from './middlewares/credentials'
@@ -57,6 +58,7 @@ app.use('/api/v1/clients', clientsRouter)
 app.use('/api/v1/categories', categoriesRouter)
 app.use('/api/v1/productTypes', productTypesRouter)
 app.use('/api/v1/methodPayments', methodPaymentRouter)
+app.use('/api/v1/roles', rolesRouter)
 
 // app server listening
 const PORT = process.env.PORT ?? 3001
