@@ -57,6 +57,11 @@ const userSchema = new Schema({
     inmutable: true,
     default: () => new Date().toLocaleDateString()
   },
+  sortingDate: {
+    type: Date,
+    inmutable: true,
+    default: () => new Date()
+  },
   updatedAt: {
     type: Date,
     default: () => new Date().toLocaleDateString()
