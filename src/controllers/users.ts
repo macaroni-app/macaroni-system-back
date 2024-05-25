@@ -237,7 +237,7 @@ const usersController = {
 
     // agregra roles
     if (req.body.role !== undefined && req.body.role !== null) {
-      const foundRole = await Role.findOne({ code: req.body.role })
+      const foundRole = await Role.findOne({ _id: req.body.role })
       newUser.role = foundRole?._id
     } else {
       const role = await Role.findOne({ code: 2001 })
@@ -256,7 +256,7 @@ const usersController = {
       (req.body.firstName === undefined || req.body.firstName === null) ||
       (req.body.lastName === undefined || req.body.lastName === null) ||
       (req.body.password === undefined || req.body.password === null) ||
-      (req.body.email === undefined || req.body.password === null)
+      (req.body.email === undefined || req.body.email === null)
     ) {
       return res.status(400).json({
         status: 400,
@@ -280,7 +280,7 @@ const usersController = {
       }
     }
 
-    // // encriptamos
+    // encriptamos
     const jumps = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(req.body.password, jumps)
 
