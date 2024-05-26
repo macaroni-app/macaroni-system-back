@@ -4,7 +4,7 @@ import { userService } from '../services/users'
 import { UserPayload } from '../middlewares/validate-token'
 import jwt from 'jsonwebtoken'
 
-// import bcrypt from 'bcrypt'
+import bcrypt from 'bcrypt'
 // import transporter from "../helpers/mailer.js";
 
 import {
@@ -288,6 +288,43 @@ const usersController = {
       ...req.body,
       updatedAt: new Date()
       // password: hash
+    })
+
+    return res.status(201).json({
+      status: 201,
+      isUpdated: true,
+      data: updateUser !== 0 ? id : null
+    })
+  },
+  changePassword: async (req: Request, res: Response): Promise<Response> => {
+    if (
+      (req.body.password === undefined || req.body.password === null)
+    ) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+    const { id } = req.params
+
+    const oldInforUser = await userService.getOne({ _id: id })
+
+    if (oldInforUser === undefined || oldInforUser === null) {
+      return res.status(404).json({
+        status: 404,
+        isStored: false,
+        message: NOT_FOUND
+      })
+    }
+
+    // encriptamos
+    const jumps = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(req.body.password, jumps)
+
+    const updateUser = await userService.update(id, {
+      password: hash,
+      updatedAt: new Date()
     })
 
     return res.status(201).json({
