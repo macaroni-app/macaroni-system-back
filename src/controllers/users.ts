@@ -4,7 +4,7 @@ import { userService } from '../services/users'
 import { UserPayload } from '../middlewares/validate-token'
 import jwt from 'jsonwebtoken'
 
-import bcrypt from 'bcrypt'
+// import bcrypt from 'bcrypt'
 // import transporter from "../helpers/mailer.js";
 
 import {
@@ -254,9 +254,9 @@ const usersController = {
   update: async (req: Request, res: Response): Promise<Response> => {
     if (
       (req.body.firstName === undefined || req.body.firstName === null) ||
-      (req.body.lastName === undefined || req.body.lastName === null) ||
-      (req.body.password === undefined || req.body.password === null) ||
-      (req.body.email === undefined || req.body.email === null)
+      (req.body.lastName === undefined || req.body.lastName === null)
+      // (req.body.password === undefined || req.body.password === null) ||
+      // (req.body.email === undefined || req.body.email === null)
     ) {
       return res.status(400).json({
         status: 400,
@@ -281,13 +281,13 @@ const usersController = {
     }
 
     // encriptamos
-    const jumps = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(req.body.password, jumps)
+    // const jumps = await bcrypt.genSalt(10)
+    // const hash = await bcrypt.hash(req.body.password, jumps)
 
     const updateUser = await userService.update(id, {
       ...req.body,
-      updatedAt: new Date(),
-      password: hash
+      updatedAt: new Date()
+      // password: hash
     })
 
     return res.status(201).json({
