@@ -55,7 +55,7 @@ const userSchema = new Schema({
   createdAt: {
     type: Date,
     inmutable: true,
-    default: () => new Date().toLocaleDateString()
+    default: () => new Date()
   },
   sortingDate: {
     type: Date,
@@ -64,7 +64,7 @@ const userSchema = new Schema({
   },
   updatedAt: {
     type: Date,
-    default: () => new Date().toLocaleDateString()
+    default: () => new Date()
   },
   deletedAt: {
     type: Date
