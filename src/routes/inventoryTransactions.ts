@@ -18,7 +18,7 @@ inventoryTransactionRouter.get('/', [verifyToken as RequestHandler, verifyRole(R
 inventoryTransactionRouter.get('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER), schemaValidator(GetInventoryTransactionSchema)], inventoryTransactionController.getOne as RequestHandler)
 
 // POST - http://localhost:3000/api/v1/inventoryTransactions
-inventoryTransactionRouter.post('/', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(CreateInventoryTransactionSchema)], inventoryTransactionController.store as RequestHandler)
+inventoryTransactionRouter.post('/', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SUPERVISOR), schemaValidator(CreateInventoryTransactionSchema)], inventoryTransactionController.store as RequestHandler)
 
 // POST - http://localhost:3000/api/v1/inventoryTransactions
 inventoryTransactionRouter.post('/bulkCreate', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER), schemaValidator(CreateManyInventoryTransactionSchema)], inventoryTransactionController.storeMany as RequestHandler)

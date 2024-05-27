@@ -18,7 +18,7 @@ inventoryRouter.get('/', [verifyToken as RequestHandler, verifyRole(RoleCodes.AD
 inventoryRouter.get('/:id', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER), schemaValidator(GetInventorySchema)], inventoriesController.getOne as RequestHandler)
 
 // POST - http://localhost:3000/api/v1/inventories
-inventoryRouter.post('/', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN), schemaValidator(CreateInventorySchema)], inventoriesController.store as RequestHandler)
+inventoryRouter.post('/', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SUPERVISOR), schemaValidator(CreateInventorySchema)], inventoriesController.store as RequestHandler)
 
 // PUT - http://localhost:3000/api/v1/inventories
 inventoryRouter.put('/bulkUpdate', [verifyToken as RequestHandler, verifyRole(RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER), schemaValidator(UpdateManyInventorySchema)], inventoriesController.updateMany as RequestHandler<{}, {}, UpdateManyInventoriesBodyType, {}>)
