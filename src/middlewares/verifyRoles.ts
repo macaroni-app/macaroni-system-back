@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 
-const verifyRole = (...allowedRoles: number[]) => {
+const verifyRole = (allowedRoles: number[]) => {
   return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
     if (req.role === undefined || req.role === null) return res.sendStatus(401)
 
