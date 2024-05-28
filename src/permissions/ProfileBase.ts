@@ -64,7 +64,7 @@ const ProfileBase = {
     edit: [RoleCodes.ADMIN],
     deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     delete: [RoleCodes.ADMIN],
-    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
   },
   productTypes: {
@@ -72,7 +72,7 @@ const ProfileBase = {
     edit: [RoleCodes.ADMIN],
     deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     delete: [RoleCodes.ADMIN],
-    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
   },
   clients: {
@@ -88,7 +88,7 @@ const ProfileBase = {
     edit: [RoleCodes.ADMIN],
     deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     delete: [RoleCodes.ADMIN],
-    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
   },
   roles: {
