@@ -6,7 +6,7 @@ const ProfileBase = {
   },
   sales: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
-    edit: [RoleCodes.ADMIN],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     cancel: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     delete: [RoleCodes.ADMIN],
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
@@ -14,7 +14,7 @@ const ProfileBase = {
   },
   saleItems: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
-    edit: [RoleCodes.ADMIN],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     cancel: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     delete: [RoleCodes.ADMIN],
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
@@ -46,7 +46,7 @@ const ProfileBase = {
   },
   inventories: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
-    edit: [RoleCodes.ADMIN],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     delete: [RoleCodes.ADMIN],
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
