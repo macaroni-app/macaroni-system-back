@@ -46,14 +46,14 @@ const ProfileBase = {
   },
   inventories: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
-    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     delete: [RoleCodes.ADMIN],
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN]
   },
   inventoryTransactions: {
-    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     edit: [RoleCodes.ADMIN],
     delete: [RoleCodes.ADMIN],
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
