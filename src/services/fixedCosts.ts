@@ -5,7 +5,7 @@ import { FixedCostType } from '../schemas/fixedCosts'
 export const fixedCostService = {
   getAll: (options: FilterQuery<FixedCostType>) => {
     try {
-      return FixedCost.find({ ...options }).sort({ createdAt: -1 })
+      return FixedCost.find({ ...options }).sort({ sortingDate: -1 })
     } catch (error) {
       return error
     }
