@@ -7,13 +7,44 @@ const fixedCostController = {
   getAll: async (req: Request<{}, {}, {}, GetFixedCostQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
+    const all = req.query.all === 'true'
+
+    let startDate = new Date()
+    let endDate = new Date()
+
+    if (req.query.startDate !== undefined) {
+      startDate = new Date(req.query.startDate)
+    }
+
+    if (req.query.endDate !== undefined) {
+      endDate = new Date(req.query.endDate)
+    }
+
+    const firstDayOfMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+    const lastDayOfMonth = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0)
+
+    startDate = firstDayOfMonth
+    endDate = lastDayOfMonth
+
     const filters = {
       $expr: {
-        $and: [{ $eq: ['$_id', id] }]
+        $and: [
+          { $eq: ['$isDeleted', false] },
+          { $gte: ['$operationDate', startDate] },
+          { $lte: ['$operationDate', endDate] }
+        ]
       }
     }
 
-    const fixedCosts: FixedCostType[] = await fixedCostService.getAll((id !== null && id !== undefined) ? filters : {})
+    const fixedCosts: FixedCostType[] = await fixedCostService.getAll((id === undefined || id === null)
+      ? !all
+          ? filters
+          : {}
+      : {
+          $expr: {
+            $and: [{ $eq: ['$_id', id] }]
+          }
+        })
 
     return res.status(200).json({
       status: 200,

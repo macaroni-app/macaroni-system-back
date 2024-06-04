@@ -85,9 +85,9 @@ const ProfileBase = {
   },
   fixedCosts: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
-    edit: [RoleCodes.ADMIN],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
-    delete: [RoleCodes.ADMIN],
+    delete: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
   },
