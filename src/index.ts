@@ -23,6 +23,7 @@ import methodPaymentRouter from './routes/paymentMethods'
 import saleItemsRouter from './routes/saleItems'
 import rolesRouter from './routes/roles'
 import fixedCostRouter from './routes/fixedCosts'
+import reportsRouter from './routes/reports'
 
 // middlewares
 import credentials from './middlewares/credentials'
@@ -61,6 +62,7 @@ app.use('/api/v1/productTypes', productTypesRouter)
 app.use('/api/v1/methodPayments', methodPaymentRouter)
 app.use('/api/v1/roles', rolesRouter)
 app.use('/api/v1/fixedCosts', fixedCostRouter)
+app.use('/api/v1/reports', reportsRouter)
 
 // app server listening
 const PORT = process.env.PORT ?? 3001
