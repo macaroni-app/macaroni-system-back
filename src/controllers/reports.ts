@@ -13,8 +13,6 @@ const reportsController = {
 
     const all = req.query.all === 'true'
 
-    const historyMonthToRetrieve = req.query.historyMonthToRetrieve
-
     let startDate = new Date()
     let endDate = new Date()
 
@@ -31,16 +29,6 @@ const reportsController = {
 
     startDate = firstDayOfMonth
     endDate = lastDayOfMonth
-
-    if (historyMonthToRetrieve !== undefined) {
-      startDate = new Date()
-      startDate.setDate(0)
-      startDate.setMonth(startDate.getMonth() + 1)
-      startDate.setFullYear(startDate.getFullYear() - 1)
-
-      endDate = new Date()
-      endDate.setDate(endDate.getDate() + 1)
-    }
 
     const filters = {
       $expr: {
@@ -75,8 +63,6 @@ const reportsController = {
 
     const all = req.query.all === 'true'
 
-    const historyMonthToRetrieve = req.query.historyMonthToRetrieve
-
     let startDate = new Date()
     let endDate = new Date()
 
@@ -93,16 +79,6 @@ const reportsController = {
 
     startDate = firstDayOfMonth
     endDate = lastDayOfMonth
-
-    if (historyMonthToRetrieve !== undefined) {
-      startDate = new Date()
-      startDate.setDate(0)
-      startDate.setMonth(startDate.getMonth() + 1)
-      startDate.setFullYear(startDate.getFullYear() - 1)
-
-      endDate = new Date()
-      endDate.setDate(endDate.getDate() + 1)
-    }
 
     const filters = {
       $expr: {
