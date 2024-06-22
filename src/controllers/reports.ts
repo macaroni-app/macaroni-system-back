@@ -7,6 +7,9 @@ import { reportService } from '../services/reports'
 import { GetSaleQueryType, SaleType } from '../schemas/sales'
 import { GetSaleItemQueryType, SaleItemType } from '../schemas/saleItems'
 
+// utils
+import { calculateDates } from '../libs/utils'
+
 const reportsController = {
   getAllSales: async (req: Request<{}, {}, {}, GetSaleQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
@@ -33,13 +36,9 @@ const reportsController = {
     endDate = lastDayOfMonth
 
     if (historyMonthToRetrieve !== undefined) {
-      startDate = new Date()
-      startDate.setDate(0)
-      startDate.setMonth(startDate.getMonth() + 1)
-      startDate.setFullYear(startDate.getFullYear() - 1)
-
-      endDate = new Date()
-      endDate.setDate(endDate.getDate() + 1)
+      const dates = calculateDates(Number(historyMonthToRetrieve))
+      startDate = dates.startDate
+      endDate = dates.endDate
     }
 
     const filters = {
@@ -95,13 +94,9 @@ const reportsController = {
     endDate = lastDayOfMonth
 
     if (historyMonthToRetrieve !== undefined) {
-      startDate = new Date()
-      startDate.setDate(0)
-      startDate.setMonth(startDate.getMonth() + 1)
-      startDate.setFullYear(startDate.getFullYear() - 1)
-
-      endDate = new Date()
-      endDate.setDate(endDate.getDate() + 1)
+      const dates = calculateDates(Number(historyMonthToRetrieve))
+      startDate = dates.startDate
+      endDate = dates.endDate
     }
 
     const filters = {
