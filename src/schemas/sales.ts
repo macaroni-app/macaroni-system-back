@@ -4,6 +4,7 @@ export const SaleSchema = z.object({
   isRetail: z.boolean().optional(),
   client: z.string().min(24).max(24).optional(),
   paymentMethod: z.string().min(24).max(24).optional(),
+  costTotal: z.number().nonnegative(),
   total: z.number().nonnegative(),
   status: z.enum(['PAID', 'CANCELLED']),
   isDeleted: z.boolean().optional(),

@@ -76,6 +76,7 @@ const salesController = {
       (req.body.isRetail === null || req.body.isRetail === undefined) ||
       (req.body.paymentMethod === null || req.body.paymentMethod === undefined) ||
       (req.body.client === null || req.body.client === undefined) ||
+      (req.body.costTotal === null || req.body.costTotal === undefined) ||
       (req.body.total === null || req.body.total === undefined)
     ) {
       return res.status(400).json({

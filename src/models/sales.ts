@@ -9,6 +9,7 @@ export interface ISale extends Document {
   isRetail: boolean
   client: string
   paymentMethod: string
+  costTotal: number
   total: number
   status: SaleStatus
   isDeleted: boolean
@@ -33,6 +34,10 @@ const saleSchema = new Schema({
   paymentMethod: {
     type: SchemaTypes.ObjectId,
     ref: 'methodPayment',
+    required: true
+  },
+  costTotal: {
+    type: Number,
     required: true
   },
   total: {

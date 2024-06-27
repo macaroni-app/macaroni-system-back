@@ -37,6 +37,7 @@ export const salesService = {
       sale.client = newSaleData?.client
       sale.paymentMethod = newSaleData?.paymentMethod
       sale.isRetail = newSaleData?.isRetail
+      sale.costTotal = newSaleData?.costTotal
       sale.total = newSaleData?.total
       sale.status = newSaleData?.status
 
