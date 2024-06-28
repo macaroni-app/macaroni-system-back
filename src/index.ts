@@ -27,7 +27,7 @@ import reportsRouter from './routes/reports'
 
 // middlewares
 import credentials from './middlewares/credentials'
-import { fillCostFieldSales } from './libs/fillCostFieldSales'
+// import { fillCostFieldSales } from './libs/fillCostFieldSales'
 
 // app instance
 const app = express()
@@ -36,7 +36,7 @@ const app = express()
 void createRoles()
 
 // scripts
-void fillCostFieldSales()
+// void fillCostFieldSales()
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
