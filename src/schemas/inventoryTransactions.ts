@@ -5,6 +5,8 @@ export const InventoryTransactionSchema = z.object({
   transactionType: z.enum(['UP', 'DOWN']),
   transactionReason: z.enum(['BUY', 'SELL', 'RETURN', 'ADJUSTMENT', 'DONATION', 'DEFEATED', 'LOSS', 'INTERNAL_USAGE']),
   affectedAmount: z.number().nonnegative(),
+  oldQuantityAvailable: z.number().nonnegative(),
+  currentQuantityAvailable: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

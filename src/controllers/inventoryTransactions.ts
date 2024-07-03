@@ -43,7 +43,9 @@ const inventoryTransactionController = {
     if (
       (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.transactionType === null || req.body.transactionType === undefined) ||
-      (req.body.affectedAmount === null || req.body.affectedAmount === undefined)
+      (req.body.affectedAmount === null || req.body.affectedAmount === undefined) ||
+      (req.body.oldQuantityAvailable === null || req.body.oldQuantityAvailable === undefined) ||
+      (req.body.currentQuantityAvailable === null || req.body.currentQuantityAvailable === undefined)
     ) {
       return res.status(400).json({
         status: 400,
@@ -108,7 +110,9 @@ const inventoryTransactionController = {
     if (
       (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.transactionType === null || req.body.transactionType === undefined) ||
-      (req.body.affectedAmount === null || req.body.affectedAmount === undefined)
+      (req.body.affectedAmount === null || req.body.affectedAmount === undefined) ||
+      (req.body.oldQuantityAvailable === null || req.body.oldQuantityAvailable === undefined) ||
+      (req.body.currentQuantityAvailable === null || req.body.currentQuantityAvailable === undefined)
     ) {
       return res.status(400).json({
         status: 400,
