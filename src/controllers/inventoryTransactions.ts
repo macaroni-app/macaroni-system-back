@@ -8,13 +8,33 @@ const inventoryTransactionController = {
   getAll: async (req: Request<{}, {}, {}, GetInventoryTransactionQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
 
+    let startDate = new Date()
+    let endDate = new Date()
+
+    const firstDayOfMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1)
+    const lastDayOfMonth = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0)
+
+    startDate = firstDayOfMonth
+    endDate = lastDayOfMonth
+
     const filters = {
       $expr: {
-        $and: [{ $eq: ['$_id', id] }]
+        $and: [
+          { $gte: ['$createdAt', startDate] },
+          { $lte: ['$createdAt', endDate] }
+        ]
       }
     }
 
-    const inventoryTransactions: IInventoryTransaction[] = await inventoryTransactionService.getAll((id !== null && id !== undefined) ? filters : {})
+    const inventoryTransactions: IInventoryTransaction[] = await inventoryTransactionService.getAll(
+      (id === undefined || id === null)
+        ? filters
+        : {
+            $expr: {
+              $and: [{ $eq: ['$_id', id] }]
+            }
+          }
+    )
 
     return res.status(200).json({
       status: 200,
