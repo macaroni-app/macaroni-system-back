@@ -40,6 +40,7 @@ export const inventoryTransactionService = {
       inventory.affectedAmount = newInventoryTransactionData?.affectedAmount
       inventory.oldQuantityAvailable = newInventoryTransactionData?.oldQuantityAvailable
       inventory.currentQuantityAvailable = newInventoryTransactionData?.currentQuantityAvailable
+      inventory.unitCost = newInventoryTransactionData?.unitCost
 
       return await InventoryTransaction.updateOne({ _id: id }, { $set: { ...inventory } })
     } catch (error) {
@@ -65,6 +66,7 @@ export const inventoryTransactionService = {
             inventoryTransaction.affectedAmount = inventoryTransactionToUpdate.affectedAmount
             inventoryTransaction.oldQuantityAvailable = inventoryTransactionToUpdate.oldQuantityAvailable
             inventoryTransaction.currentQuantityAvailable = inventoryTransactionToUpdate.currentQuantityAvailable
+            inventoryTransaction.unitCost = inventoryTransactionToUpdate.unitCost
             inventoryTransaction.transactionType = inventoryTransactionToUpdate.transactionType
             inventoryTransaction.transactionReason = inventoryTransactionToUpdate.transactionReason
             inventoryTransactionsUpdated.push(inventoryTransaction)

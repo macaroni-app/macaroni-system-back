@@ -23,6 +23,7 @@ export interface IInventoryTransaction extends Document {
   affectedAmount: Number
   oldQuantityAvailable: Number
   currentQuantityAvailable: Number
+  unitCost: Number
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
@@ -55,6 +56,10 @@ const inventoryTransactionSchema = new Schema({
     required: true
   },
   currentQuantityAvailable: {
+    type: Number,
+    required: true
+  },
+  unitCost: {
     type: Number,
     required: true
   },

@@ -7,6 +7,7 @@ export const InventoryTransactionSchema = z.object({
   affectedAmount: z.number().nonnegative(),
   oldQuantityAvailable: z.number().nonnegative(),
   currentQuantityAvailable: z.number().nonnegative(),
+  unitCost: z.number().nonnegative(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
