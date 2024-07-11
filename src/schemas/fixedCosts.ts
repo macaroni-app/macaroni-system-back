@@ -29,9 +29,10 @@ export const GetFixedCostSchema = z.object({
   }),
   query: z.object({
     id: z.string().min(24).max(24).optional(),
-    startDate: z.date().optional(),
-    endDate: z.date().optional(),
-    all: z.string().optional()
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    all: z.string().optional(),
+    historyMonthToRetrieve: z.string().optional()
   })
 })
 
