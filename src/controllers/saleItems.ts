@@ -19,13 +19,16 @@ const saleItemsController = {
 
     if (req.query.endDate !== undefined) {
       endDate = new Date(req.query.endDate)
+      endDate.setDate(endDate.getDate() + 1)
     }
 
     const firstDayOfMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1)
     const lastDayOfMonth = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0)
 
-    startDate = firstDayOfMonth
-    endDate = lastDayOfMonth
+    if (req.query.startDate === undefined && req.query.endDate === undefined) {
+      startDate = firstDayOfMonth
+      endDate = lastDayOfMonth
+    }
 
     const filters = {
       $expr: {
