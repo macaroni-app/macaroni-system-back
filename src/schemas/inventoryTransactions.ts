@@ -39,6 +39,8 @@ export const GetInventoryTransactionSchema = z.object({
   }),
   query: z.object({
     id: z.string().min(24).max(24).optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
     historyMonthToRetrieve: z.string().optional()
   })
 })
