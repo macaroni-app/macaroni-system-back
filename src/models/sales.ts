@@ -11,6 +11,7 @@ export interface ISale extends Document {
   paymentMethod: string
   costTotal: number
   total: number
+  discount: number
   status: SaleStatus
   isDeleted: boolean
   createdAt: Date
@@ -43,6 +44,10 @@ const saleSchema = new Schema({
   total: {
     type: Number,
     required: true
+  },
+  discount: {
+    type: Number,
+    default: 0
   },
   status: {
     type: String,

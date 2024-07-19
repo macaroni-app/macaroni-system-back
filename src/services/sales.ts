@@ -40,6 +40,7 @@ export const salesService = {
       sale.costTotal = newSaleData?.costTotal
       sale.total = newSaleData?.total
       sale.status = newSaleData?.status
+      sale.discount = newSaleData?.discount
 
       return await Sale.updateOne({ _id: id }, { $set: { ...sale } })
     } catch (error) {
