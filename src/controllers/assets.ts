@@ -14,7 +14,13 @@ const assetsController = {
       }
     }
 
-    const assets: AssetType[] = await assetService.getAll((id !== null && id !== undefined) ? filters : {})
+    const assets: AssetType[] = await assetService.getAll((id !== null && id !== undefined)
+      ? filters
+      : {
+          $expr: {
+            $and: [{ $eq: ['$isActive', true] }]
+          }
+        })
 
     return res.status(200).json({
       status: 200,
