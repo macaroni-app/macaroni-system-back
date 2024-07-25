@@ -2,10 +2,10 @@
   "name": "macaroni-system-back",
   "version": "1.0.0",
   "description": "",
+  "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "build": "esbuild index=./src --bundle --minify --outdir=dist --packages=external --platform=node",
-		"start": "node dist",
+    "start": "node dist/index.js",
     "tsc": "tsc",
     "lint": "ts-standard",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -35,8 +35,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.0",
     "morgan": "^1.10.0",
-    "zod": "^3.22.4",
-    "esbuild": "^0.23.0"
+    "zod": "^3.22.4"
   },
   "eslintConfig": {
     "parserOptions": {
