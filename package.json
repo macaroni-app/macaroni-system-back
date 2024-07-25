@@ -2,10 +2,10 @@
   "name": "macaroni-system-back",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "start": "node src/index.js",
+    "build": "esbuild index=./src --bundle --minify --outdir=dist --packages=external --platform=node",
+		"start": "node dist",
     "tsc": "tsc",
     "lint": "ts-standard",
     "test": "echo \"Error: no test specified\" && exit 1"
