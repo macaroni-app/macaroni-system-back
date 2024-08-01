@@ -47,7 +47,7 @@ const saleItemsController = {
             : {}
         : {
             $expr: {
-              $and: [{ $eq: ['$_id', id] }]
+              $and: [{ $eq: ['$sale', id] }]
             }
           }
     )
