@@ -11,16 +11,14 @@ export const calculateDates = (numeroDeMeses: number): IStartEndDate => {
 
   // Ajustar el día para obtener el primer día del mes de inicio
   fechaInicio.setDate(1)
+  // Ajustar la hora para obtener las 00:00:00 del día de inicio
+  fechaInicio.setHours(0, 0, 0, 0)
 
   // Calcular la fecha de finalización (último día del mes actual)
   const fechaFin = new Date()
   fechaFin.setMonth(fechaFin.getMonth() + 1) // Ir al siguiente mes
   fechaFin.setDate(0) // Volver al último día del mes anterior
 
-  // return {
-  //   startDate: fechaInicio.toISOString().slice(0, 10), // Formato YYYY-MM-DD
-  //   endDate: fechaFin.toISOString().slice(0, 10) // Formato YYYY-MM-DD
-  // }
   return {
     startDate: fechaInicio,
     endDate: fechaFin
