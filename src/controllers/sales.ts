@@ -93,6 +93,10 @@ const salesController = {
     saleToStore.createdBy = req?.user?.id
     saleToStore.updatedBy = req?.user?.id
 
+    if (saleToStore.discount === undefined || saleToStore.discount === null) {
+      saleToStore.discount = 0
+    }
+
     const saleStored: SaleType = await salesService.store(saleToStore)
 
     return res.status(201).json({
@@ -144,6 +148,10 @@ const salesController = {
         isUpdated: false,
         message: NOT_FOUND
       })
+    }
+
+    if (oldSale.discount === undefined || oldSale.discount === null) {
+      oldSale.discount = 0
     }
 
     const newSaleData = { ...oldSale._doc, ...req.body }
