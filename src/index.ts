@@ -3,7 +3,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
-// import corsOptions from './config/corsOptions'
+import corsOptions from './config/corsOptions'
 import './database'
 
 import { createRoles } from './libs/initialSetup'
@@ -44,8 +44,7 @@ void createRoles()
 // and fetch cookies credentials requirement
 app.use(credentials)
 
-// app.use(cors(corsOptions))
-app.use(cors())
+app.use(cors(corsOptions))
 
 // app.options('*', cors(corsOptions))
 
