@@ -35,6 +35,10 @@ export const clientService = {
     try {
       const client = await Client.findOne({ _id: id }) as ClientType
       client.name = newClientData.name
+      client.condicionIVAReceptorId = newClientData.condicionIVAReceptorId
+      client.documentNumber = newClientData.documentNumber
+      client.documentType = newClientData.documentType
+      client.address = newClientData.address
 
       return await Client.updateOne({ _id: id }, { $set: { ...client } })
       // return await client.save()

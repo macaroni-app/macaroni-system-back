@@ -2,6 +2,10 @@ import { z } from 'zod'
 
 export const ClientSchema = z.object({
   name: z.string().min(1),
+  condicionIVAReceptorId: z.string().optional(),
+  documentType: z.string().optional(),
+  documentNumber: z.number().optional(),
+  address: z.string().optional(),
   isDeleted: z.boolean().optional(),
   isActive: z.boolean().optional(),
   createdAt: z.date().optional(),

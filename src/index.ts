@@ -17,6 +17,7 @@ import inventoriesRouter from './routes/inventories'
 import inventoryTransactionRouter from './routes/inventoryTransactions'
 import salesRouter from './routes/sales'
 import clientsRouter from './routes/clients'
+import businessesRouter from './routes/business'
 import categoriesRouter from './routes/categories'
 import productTypesRouter from './routes/productTypes'
 import methodPaymentRouter from './routes/paymentMethods'
@@ -24,6 +25,7 @@ import saleItemsRouter from './routes/saleItems'
 import rolesRouter from './routes/roles'
 import fixedCostRouter from './routes/fixedCosts'
 import reportsRouter from './routes/reports'
+import afipRouter from './routes/afip'
 
 // middlewares
 import credentials from './middlewares/credentials'
@@ -61,12 +63,14 @@ app.use('/api/v1/inventoryTransactions', inventoryTransactionRouter)
 app.use('/api/v1/sales', salesRouter)
 app.use('/api/v1/saleItems', saleItemsRouter)
 app.use('/api/v1/clients', clientsRouter)
+app.use('/api/v1/businesses', businessesRouter)
 app.use('/api/v1/categories', categoriesRouter)
 app.use('/api/v1/productTypes', productTypesRouter)
 app.use('/api/v1/methodPayments', methodPaymentRouter)
 app.use('/api/v1/roles', rolesRouter)
 app.use('/api/v1/fixedCosts', fixedCostRouter)
 app.use('/api/v1/reports', reportsRouter)
+app.use('/api/v1/afip', afipRouter)
 
 // app server listening
 const PORT = process.env.PORT ?? 3001

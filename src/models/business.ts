@@ -1,11 +1,10 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
 
-export interface IClient extends Document {
+export interface IBusiness extends Document {
   name: string
-  condicionIVAReceptorId: string
-  documentType: string
-  documentNumber: number
+  cuit: string
   address: string
+  ivaCondition: string
   isDeleted: boolean
   isActive: boolean
   createdAt: Date
@@ -15,25 +14,22 @@ export interface IClient extends Document {
   updatedBy: string
 }
 
-const clientSchema = new Schema({
+const businessSchema = new Schema({
   name: {
     type: String,
     required: true
   },
-  condicionIVAReceptorId: {
+  ivaCondition: {
     type: String,
     required: true
   },
-  documentType: {
+  cuit: {
     type: String,
-    required: true
-  },
-  documentNumber: {
-    type: Number,
     required: true
   },
   address: {
-    type: String
+    type: String,
+    required: true
   },
   createdAt: {
     type: Date,
@@ -67,6 +63,6 @@ const clientSchema = new Schema({
   }
 })
 
-const Client = model<IClient>('client', clientSchema)
+const Business = model<IBusiness>('business', businessSchema)
 
-export default Client
+export default Business

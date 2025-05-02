@@ -4,7 +4,7 @@ import salesController from '../controllers/sales'
 
 import verifyToken from '../middlewares/validate-token'
 import { schemaValidator } from '../middlewares/schemaValidator'
-import { CreateSaleSchema, DeleteSaleParamsType, DeleteSaleSchema, GetSaleSchema, UpdateSaleBodyType, UpdateSaleParamsType, UpdateSaleSchema } from '../schemas/sales'
+import { CreateSaleSchema, DeleteSaleParamsType, DeleteSaleSchema, GetSaleSchema, UpdateSaleBodyType, UpdateSaleQueryType, UpdateSaleSchema } from '../schemas/sales'
 
 import verifyRole from '../middlewares/verifyRoles'
 
@@ -22,7 +22,10 @@ salesRouter.get('/:id', [verifyToken as RequestHandler, verifyRole(ProfileBase.s
 salesRouter.post('/', [verifyToken as RequestHandler, verifyRole(ProfileBase.sales.create), schemaValidator(CreateSaleSchema)], salesController.store as RequestHandler)
 
 // PUT - http://localhost:3000/api/v1/sales/:id
-salesRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(ProfileBase.sales.edit), schemaValidator(UpdateSaleSchema)], salesController.update as RequestHandler<UpdateSaleParamsType, {}, UpdateSaleBodyType, {}>)
+salesRouter.put('/cancelledSale', [verifyToken as RequestHandler, verifyRole(ProfileBase.sales.edit), schemaValidator(UpdateSaleSchema)], salesController.update as RequestHandler<{}, {}, UpdateSaleBodyType, UpdateSaleQueryType>)
+
+// PUT - http://localhost:3000/api/v1/sales/invoices/:id
+salesRouter.put('/setBilledSale', [verifyToken as RequestHandler, verifyRole(ProfileBase.sales.edit), schemaValidator(UpdateSaleSchema)], salesController.setBilled as RequestHandler<{}, {}, UpdateSaleBodyType, UpdateSaleQueryType>)
 
 // DELETE - http://localhost:3000/api/v1/sales/:id
 salesRouter.delete('/:id', [verifyToken as RequestHandler, verifyRole(ProfileBase.sales.delete), schemaValidator(DeleteSaleSchema)], salesController.delete as RequestHandler<DeleteSaleParamsType, {}, {}, {}>)

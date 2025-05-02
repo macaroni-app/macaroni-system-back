@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { salesService } from '../services/sales'
 import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { CreateSaleBodyType, DeleteSaleParamsType, GetSaleParamsType, GetSaleQueryType, SaleType, UpdateSaleBodyType, UpdateSaleParamsType } from '../schemas/sales'
+import { CreateSaleBodyType, DeleteSaleParamsType, GetSaleParamsType, GetSaleQueryType, SaleType, UpdateSaleBodyType, UpdateSaleQueryType } from '../schemas/sales'
 
 const salesController = {
   getAll: async (req: Request<{}, {}, {}, GetSaleQueryType>, res: Response): Promise<Response> => {
@@ -79,6 +79,7 @@ const salesController = {
       (req.body.isRetail === null || req.body.isRetail === undefined) ||
       (req.body.paymentMethod === null || req.body.paymentMethod === undefined) ||
       (req.body.client === null || req.body.client === undefined) ||
+      (req.body.business === null || req.body.business === undefined) ||
       (req.body.costTotal === null || req.body.costTotal === undefined) ||
       (req.body.total === null || req.body.total === undefined)
     ) {
@@ -124,9 +125,8 @@ const salesController = {
       data: saleDeleted
     })
   },
-  update: async (req: Request<UpdateSaleParamsType, {}, UpdateSaleBodyType, {}>, res: Response): Promise<Response> => {
+  update: async (req: Request<{}, {}, UpdateSaleBodyType, UpdateSaleQueryType>, res: Response): Promise<Response> => {
     if (
-      (req.body.isRetail === null || req.body.isRetail === undefined) ||
       (req.body.client === null || req.body.client === undefined) ||
       (req.body.paymentMethod === null || req.body.paymentMethod === undefined) ||
       (req.body.total === null || req.body.total === undefined)
@@ -138,7 +138,44 @@ const salesController = {
       })
     }
 
-    const { id } = req.params
+    const { id } = req.query
+
+    const oldSale = await salesService.getOne({ _id: id })
+
+    if (oldSale === null || oldSale === undefined) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    if (oldSale.discount === undefined || oldSale.discount === null) {
+      oldSale.discount = 0
+    }
+
+    const newSaleData = { ...oldSale._doc, ...req.body }
+
+    const salesUpdated = await salesService.update(id, newSaleData)
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      data: salesUpdated
+    })
+  },
+  setBilled: async (req: Request<{}, {}, UpdateSaleBodyType, UpdateSaleQueryType>, res: Response): Promise<Response> => {
+    if (
+      (req.body.isBilled === null || req.body.isBilled === undefined)
+    ) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const { id } = req.query
 
     const oldSale = await salesService.getOne({ _id: id })
 

@@ -3,12 +3,14 @@ import { z } from 'zod'
 export const SaleSchema = z.object({
   isRetail: z.boolean().optional(),
   client: z.string().min(24).max(24).optional(),
+  business: z.string().min(24).max(24).optional(),
   paymentMethod: z.string().min(24).max(24).optional(),
-  costTotal: z.number().nonnegative(),
-  total: z.number().nonnegative(),
+  costTotal: z.number().nonnegative().optional(),
+  total: z.number().nonnegative().optional(),
   discount: z.number().nonnegative().optional(),
-  status: z.enum(['PAID', 'CANCELLED']),
+  status: z.enum(['PAID', 'CANCELLED']).optional(),
   isDeleted: z.boolean().optional(),
+  isBilled: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
   deletedAt: z.date().optional(),
@@ -22,7 +24,7 @@ export const CreateSaleSchema = z.object({
 
 export const UpdateSaleSchema = z.object({
   body: SaleSchema,
-  params: z.object({
+  query: z.object({
     id: z.string().min(24).max(24)
   })
 })
@@ -49,7 +51,7 @@ export const DeleteSaleSchema = z.object({
 export type SaleType = z.infer<typeof SaleSchema>
 export type CreateSaleBodyType = z.infer<typeof CreateSaleSchema>['body']
 export type UpdateSaleBodyType = z.infer<typeof UpdateSaleSchema>['body']
-export type UpdateSaleParamsType = z.infer<typeof UpdateSaleSchema>['params']
+export type UpdateSaleQueryType = z.infer<typeof UpdateSaleSchema>['query']
 export type GetSaleParamsType = z.infer<typeof GetSaleSchema>['params']
 export type GetSaleQueryType = z.infer<typeof GetSaleSchema>['query']
 export type DeleteSaleParamsType = z.infer<typeof DeleteSaleSchema>['params']

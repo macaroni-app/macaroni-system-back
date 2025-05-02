@@ -83,6 +83,14 @@ const ProfileBase = {
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
   },
+  businesses: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    delete: [RoleCodes.ADMIN],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
+  },
   fixedCosts: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
@@ -116,6 +124,16 @@ const ProfileBase = {
     view: [RoleCodes.ADMIN],
     viewDetails: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN]
+  },
+  afip: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    editOwnInfo: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    delete: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewDetails: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
   }
 }
 

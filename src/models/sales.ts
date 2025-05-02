@@ -13,6 +13,8 @@ export interface ISale extends Document {
   total: number
   discount: number
   status: SaleStatus
+  business: string
+  isBilled: boolean
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
@@ -31,6 +33,15 @@ const saleSchema = new Schema({
     type: SchemaTypes.ObjectId,
     ref: 'client',
     required: true
+  },
+  business: {
+    type: SchemaTypes.ObjectId,
+    ref: 'business',
+    required: true
+  },
+  isBilled: {
+    type: Boolean,
+    default: false
   },
   paymentMethod: {
     type: SchemaTypes.ObjectId,
