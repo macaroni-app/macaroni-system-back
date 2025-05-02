@@ -9,10 +9,7 @@ const corsOptions: cors.CorsOptions = {
       callback(new Error('Not allowed by CORS'))
     }
   },
-  optionsSuccessStatus: 200,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  optionsSuccessStatus: 200
 }
 
 export default corsOptions
