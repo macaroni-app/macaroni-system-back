@@ -46,6 +46,8 @@ app.use(credentials)
 
 app.use(cors(corsOptions))
 
+app.options('*', cors())
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
