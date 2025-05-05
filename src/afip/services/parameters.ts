@@ -39,14 +39,21 @@ export class ParametersService {
 
   async getIVACondicionReceptor (): Promise<any> {
     const authPayload = await this.getAuthPayload()
-    const response = await this.afipClient.callMethod('FEParamGetCondicionIvaReceptor', authPayload)
+    let response
 
-    const invoiceTypes = response?.['soap:Envelope']?.['soap:Body']?.FEParamGetCondicionIvaReceptorResponse?.FEParamGetCondicionIvaReceptorResult?.ResultGet?.CondicionIvaReceptor
+    try {
+      response = await this.afipClient.callMethod('FEParamGetCondicionIvaReceptor', authPayload)
 
-    return invoiceTypes?.map((invoiceType: { Id: string, Desc: string, Cmp_Clase: string }) => ({
-      id: invoiceType.Id,
-      name: invoiceType.Desc
-    }))
+      const invoiceTypes = response?.['soap:Envelope']?.['soap:Body']?.FEParamGetCondicionIvaReceptorResponse?.FEParamGetCondicionIvaReceptorResult?.ResultGet?.CondicionIvaReceptor
+
+      return invoiceTypes?.map((invoiceType: { Id: string, Desc: string, Cmp_Clase: string }) => ({
+        id: invoiceType.Id,
+        name: invoiceType.Desc
+      }))
+    } catch (error) {
+      console.error('Error al llamar a AFIP:', error)
+      return 'Fallo al contactar a AFIP'
+    }
   }
 
   // Obtener alícuotas de IVA (0%, 10.5%, 21%, etc.)
