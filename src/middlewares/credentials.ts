@@ -2,17 +2,17 @@ import { Request, Response, NextFunction } from 'express'
 import allowedOrigins from '../config/allowedOrigins'
 
 const credentials = (req: Request, res: Response, next: NextFunction): void => {
+  const origin = req.headers.origin
+  if (allowedOrigins.includes(origin ?? '')) {
+    res.setHeader('Access-Control-Allow-Credentials', 'true')
+    next()
+  }
   // const origin = req.headers.origin
   // if (allowedOrigins.includes(origin ?? '')) {
   //   res.setHeader('Access-Control-Allow-Credentials', 'true')
-  //   next()
+  //   res.setHeader('Access-Control-Allow-Origin', origin) // 🔴 ¡esto es clave!
   // }
-  const origin = req.headers.origin
-  if (allowedOrigins.includes(origin ?? '')) {
-    res.header('Access-Control-Allow-Credentials', 'true')
-    res.header('Access-Control-Allow-Origin', origin) // 🔴 ¡esto es clave!
-  }
-  next()
+  // next()
 }
 
 export default credentials
