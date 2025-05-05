@@ -1,5 +1,6 @@
 const allowedOrigins = [
   'https://macaroni-system-front.vercel.app',
+  'https://macaroni-system-front.vercel.app/',
   'http://localhost:5173'
 ]
 
