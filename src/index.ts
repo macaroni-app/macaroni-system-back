@@ -28,7 +28,7 @@ import reportsRouter from './routes/reports'
 import afipRouter from './routes/afip'
 
 // middlewares
-import credentials from './middlewares/credentials'
+// import credentials from './middlewares/credentials'
 // import { fillCostFieldSales } from './libs/fillCostFieldSales'
 
 // app instance
@@ -42,7 +42,7 @@ void createRoles()
 
 // Handle options credentials check - before CORS!
 // and fetch cookies credentials requirement
-app.use(credentials)
+// app.use(credentials)
 
 app.use(cors(corsOptions))
 
