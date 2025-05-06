@@ -39,6 +39,7 @@ export class ParametersService {
 
   async getIVACondicionReceptor (): Promise<any> {
     const authPayload = await this.getAuthPayload()
+    console.log(authPayload)
     let response
 
     try {
