@@ -74,21 +74,25 @@ export class ParametersService {
   }
 
   // Obtener tipos de documentos (CUIT, DNI, etc.)
-  async getDocumentTypes (): Promise<IParameterResponse> {
+  async getDocumentTypes (): Promise<any> {
     const authPayload = await this.getAuthPayload()
-    const response = await this.afipClient.callMethod('FEParamGetTiposDoc', authPayload)
+    let response
+    try {
+      response = await this.afipClient.callMethod('FEParamGetTiposDoc', authPayload)
+      // Extraer tipos de documentos
+      const documentTypes =
+      response['soap:Envelope']?.['soap:Body']?.FEParamGetTiposDocResponse?.FEParamGetTiposDocResult?.ResultGet?.DocTipo
+      // Formatear los datos para mejor legibilidad
+      const formattedDocumentTypes = documentTypes?.map((documentType: IParameterResponse) => ({
+        id: documentType.Id,
+        name: documentType.Desc
+      }))
 
-    // Extraer tipos de documentos
-    const documentTypes =
-    response['soap:Envelope']?.['soap:Body']?.FEParamGetTiposDocResponse?.FEParamGetTiposDocResult?.ResultGet?.DocTipo
-
-    // Formatear los datos para mejor legibilidad
-    const formattedDocumentTypes = documentTypes?.map((documentType: IParameterResponse) => ({
-      id: documentType.Id,
-      name: documentType.Desc
-    }))
-
-    return formattedDocumentTypes
+      return formattedDocumentTypes
+    } catch (error) {
+      console.error('Error al llamar a AFIP:', error)
+      return 'Fallo al contactar a AFIP'
+    }
   }
 
   // Obtener monedas disponibles
