@@ -44,6 +44,7 @@ export class ParametersService {
 
     try {
       response = await this.afipClient.callMethod('FEParamGetCondicionIvaReceptor', authPayload)
+      console.log(response)
 
       const invoiceTypes = response?.['soap:Envelope']?.['soap:Body']?.FEParamGetCondicionIvaReceptorResponse?.FEParamGetCondicionIvaReceptorResult?.ResultGet?.CondicionIvaReceptor
 
