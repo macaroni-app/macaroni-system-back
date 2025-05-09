@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
     "build": "tsc",
-    "postbuild": "copy ./src/afip/wsfev1.wsdl ./dist/afip/wsfev1.wsdl",
     "start": "node dist/index.js",
     "tsc": "tsc",
     "lint": "ts-standard",
