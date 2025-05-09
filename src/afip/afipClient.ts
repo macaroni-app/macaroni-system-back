@@ -1,6 +1,7 @@
 import { parseStringPromise } from 'xml2js'
 import { afipConfig } from '../config/afipConfig'
 import * as soap from 'soap'
+import https from 'https'
 
 export class AfipClient {
   private client: any
@@ -8,8 +9,18 @@ export class AfipClient {
   async initClient (): Promise<void> {
     if (!this.client) {
       try {
-        // Usar directamente la URL si es remota
-        this.client = await soap.createClientAsync(afipConfig.wsfeUrl)
+        const wsdlPath = afipConfig.wsfeUrl
+
+        const agent = new https.Agent({
+          minVersion: 'TLSv1',
+          secureOptions: require('constants').SSL_OP_LEGACY_SERVER_CONNECT,
+          rejectUnauthorized: false
+        })
+
+        this.client = await soap.createClientAsync(wsdlPath, {
+          wsdl_options: { agent }
+        })
+
         console.log('Cliente SOAP inicializado correctamente')
       } catch (error) {
         console.error('Error al crear el cliente SOAP:', error)
@@ -21,26 +32,24 @@ export class AfipClient {
   async callMethod (method: string, args: object): Promise<any> {
     await this.initClient()
 
-    const asyncMethod = `${method}Async`
-
-    if (typeof this.client[asyncMethod] !== 'function') {
-      throw new Error(`El método '${asyncMethod}' no está definido en el cliente SOAP.`)
+    if (typeof this.client[`${method}`] !== 'function') {
+      throw new Error(`El método '${method}' no está definido en el cliente SOAP.`)
     }
 
     try {
-      const response = await this.client[asyncMethod](args)
+      const response = await this.client[`${method}Async`](args)
 
       if (Array.isArray(response) && response.length > 0) {
         const rawXml = response[1]
         try {
-          const parsedXml = await parseStringPromise(rawXml, { explicitArray: false })
-          return parsedXml
-        } catch (parseError) {
-          console.warn('No se pudo parsear la respuesta como XML. Se devolverá JSON plano.')
+          const parsed = await parseStringPromise(rawXml, { explicitArray: false })
+          return parsed
+        } catch (error) {
+          console.warn('No se pudo parsear XML, devolviendo JSON plano.')
           return response[0]
         }
       } else {
-        throw new Error('Respuesta SOAP inesperada: el array está vacío o mal formado.')
+        throw new Error('Respuesta SOAP inesperada.')
       }
     } catch (error) {
       console.error('Error en la llamada SOAP:', error)
