@@ -1,6 +1,5 @@
 import * as soap from 'soap'
 import { parseStringPromise } from 'xml2js'
-import https from 'https'
 import { afipConfig } from '../config/afipConfig'
 
 export class AfipClient {
@@ -10,16 +9,7 @@ export class AfipClient {
     if (this.client) return
 
     try {
-      const agent = new https.Agent({
-        minVersion: 'TLSv1',
-        rejectUnauthorized: false,
-        secureOptions: require('constants').SSL_OP_LEGACY_SERVER_CONNECT
-      })
-
-      this.client = await soap.createClientAsync(afipConfig.wsfeUrl, {
-        wsdl_options: { agent }
-      })
-
+      this.client = await soap.createClientAsync(afipConfig.wsfeUrl)
       console.log('Cliente SOAP inicializado correctamente')
     } catch (error) {
       console.error('Error al crear el cliente SOAP:', error)
@@ -30,18 +20,26 @@ export class AfipClient {
   async callMethod (method: string, args: object): Promise<any> {
     await this.initClient()
 
+    const asyncMethod = `${method}Async`
+
+    if (typeof this.client[asyncMethod] !== 'function') {
+      throw new Error(`El método '${asyncMethod}' no está definido en el cliente SOAP. Revisa el WSDL.`)
+    }
+
     try {
-      const response = await this.client[`${method}Async`](args)
+      const response = await this.client[asyncMethod](args)
 
       if (Array.isArray(response) && response.length > 0) {
         const rawXml = response[1]
         try {
-          return await parseStringPromise(rawXml, { explicitArray: false })
-        } catch {
+          const parsedXml = await parseStringPromise(rawXml, { explicitArray: false })
+          return parsedXml
+        } catch (parseError) {
+          console.warn('No se pudo parsear la respuesta como XML. Se devolverá JSON plano.')
           return response[0]
         }
       } else {
-        throw new Error('Respuesta SOAP inesperada')
+        throw new Error('Respuesta SOAP inesperada: el array está vacío o mal formado.')
       }
     } catch (error) {
       console.error('Error en la llamada SOAP:', error)
