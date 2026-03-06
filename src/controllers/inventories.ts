@@ -1,8 +1,7 @@
 import { Request, Response } from 'express'
 import { inventoryService } from '../services/inventories'
-import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { INSUFFICIENT_INVENTORY, MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
 import { CreateInventoryBodyType, DeleteInventoryParamsType, GetInventoryParamsType, GetInventoryQueryType, InventoryType, UpdateInventoryBodyType, UpdateInventoryParamsType, UpdateManyInventoriesBodyType } from '../schemas/inventories'
-import { IInventory } from '../models/inventories'
 
 const inventoriesController = {
   getAll: async (req: Request<{}, {}, {}, GetInventoryQueryType>, res: Response): Promise<Response> => {
@@ -83,32 +82,39 @@ const inventoriesController = {
     })
   },
   update: async (req: Request<UpdateInventoryParamsType, {}, UpdateInventoryBodyType, {}>, res: Response): Promise<Response> => {
-    if (
-      (req.body.asset === null || req.body.asset === undefined) ||
-      (req.body.quantityAvailable === null || req.body.quantityAvailable === undefined)
-    ) {
+    if (req.body.quantityDelta === null || req.body.quantityDelta === undefined) {
       return res.status(400).json({
         status: 400,
-        isStored: false,
+        isUpdated: false,
         message: MISSING_FIELDS_REQUIRED
       })
     }
 
     const { id } = req.params
 
-    const oldInventory = await inventoryService.getOne({ _id: id })
+    const inventoryUpdated = await inventoryService.updateAtomic(id, {
+      asset: req.body.asset,
+      quantityDelta: req.body.quantityDelta,
+      updatedBy: req?.user?.id
+    })
 
-    if (oldInventory === null || oldInventory === undefined) {
-      return res.status(404).json({
-        status: 404,
+    if (inventoryUpdated === null || inventoryUpdated === undefined) {
+      const inventoryExists = await inventoryService.getOne({ _id: id })
+
+      if (inventoryExists === null || inventoryExists === undefined) {
+        return res.status(404).json({
+          status: 404,
+          isUpdated: false,
+          message: NOT_FOUND
+        })
+      }
+
+      return res.status(409).json({
+        status: 409,
         isUpdated: false,
-        message: NOT_FOUND
+        message: INSUFFICIENT_INVENTORY
       })
     }
-
-    const newInventoryData = { ...oldInventory._doc, ...req.body }
-
-    const inventoryUpdated = await inventoryService.update(id, newInventoryData)
 
     return res.status(200).json({
       status: 200,
@@ -117,25 +123,26 @@ const inventoriesController = {
     })
   },
   updateMany: async (req: Request<{}, {}, UpdateManyInventoriesBodyType, {}>, res: Response): Promise<Response> => {
-    if (req.body.inventories !== undefined && req.body.inventories.length === 0) {
+    if (req.body.inventories === undefined || req.body.inventories.length === 0) {
       return res.status(400).json({
         status: 400,
-        isStored: false,
+        isUpdated: false,
         message: MISSING_FIELDS_REQUIRED
       })
     }
 
     const inventoriesToUpdate = req.body.inventories.map((inventory) => {
       return {
-        ...inventory
+        ...inventory,
+        updatedBy: req?.user?.id
       }
-    }) as unknown as IInventory[]
+    })
 
-    const data = await inventoryService.updateMany(inventoriesToUpdate)
+    const data = await inventoryService.updateManyAtomic(inventoriesToUpdate)
 
     return res.status(200).json({
       status: 200,
-      isUpdated: true,
+      isUpdated: data.updated.length > 0,
       data
     })
   }

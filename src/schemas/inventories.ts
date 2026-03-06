@@ -18,12 +18,21 @@ export const CreateInventorySchema = z.object({
 
 export const UpdateManyInventorySchema = z.object({
   body: z.object({
-    inventories: z.array(InventorySchema)
+    inventories: z.array(
+      z.object({
+        id: z.string().min(24).max(24),
+        asset: z.string().min(24).max(24).optional(),
+        quantityDelta: z.number().int()
+      })
+    )
   })
 })
 
 export const UpdateInventorySchema = z.object({
-  body: InventorySchema,
+  body: z.object({
+    asset: z.string().min(24).max(24).optional(),
+    quantityDelta: z.number().int()
+  }),
   params: z.object({
     id: z.string().min(24).max(24)
   })
