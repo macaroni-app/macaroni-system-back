@@ -1,10 +1,10 @@
-import { Request, Response } from 'express'
-import { IUser } from '../models/users'
-import { userService } from '../services/users'
-import { UserPayload } from '../middlewares/validate-token'
-import jwt from 'jsonwebtoken'
+import { Request, Response } from "express";
+import { IUser } from "../models/users";
+import { userService } from "../services/users";
+import { UserPayload } from "../middlewares/validate-token";
+import jwt from "jsonwebtoken";
 
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 // import transporter from "../helpers/mailer.js";
 
 import {
@@ -12,67 +12,153 @@ import {
   INVALID_CREDENTIALS,
   MISSING_FIELDS_REQUIRED,
   INVALID_PASSWORD_LENGTH,
-  DUPLICATE_RECORD
+  DUPLICATE_RECORD,
   // INVALID_TOKEN
-} from '../labels/labels'
-import Role from '../models/roles'
-import { UserType } from '../schemas/users'
+} from "../labels/labels";
+import Role from "../models/roles";
+import { UserType } from "../schemas/users";
+
+const isProduction = process.env.NODE_ENV === "production";
+const refreshCookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+  maxAge: 24 * 60 * 60 * 1000,
+};
+const refreshCookieClearOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+};
+const MAX_ACTIVE_REFRESH_TOKENS = Number(
+  process.env.MAX_ACTIVE_REFRESH_TOKENS ?? 2,
+);
+const CONCURRENT_REFRESH_GRACE_SECONDS = Number(
+  process.env.CONCURRENT_REFRESH_GRACE_SECONDS ?? 15,
+);
+
+const sanitizeRefreshTokensForUser = (
+  refreshTokens: unknown,
+  refreshTokenSecret: string,
+  userId: string,
+  userEmail: string,
+): string[] => {
+  const normalizedRefreshTokens = Array.isArray(refreshTokens)
+    ? refreshTokens
+    : typeof refreshTokens === "string" && refreshTokens.length > 0
+      ? [refreshTokens]
+      : [];
+
+  const uniqueRefreshTokens = [
+    ...new Set(
+      normalizedRefreshTokens.filter(
+        (token): token is string =>
+          typeof token === "string" && token.length > 0,
+      ),
+    ),
+  ];
+
+  return uniqueRefreshTokens.filter((token) => {
+    try {
+      const decoded = jwt.verify(token, refreshTokenSecret) as UserPayload;
+      return decoded?.id === userId && decoded?.email === userEmail;
+    } catch {
+      return false;
+    }
+  });
+};
+
+const keepMostRecentRefreshTokens = (
+  refreshTokens: string[],
+  refreshTokenSecret: string,
+): string[] => {
+  return refreshTokens
+    .map((token) => {
+      try {
+        const decoded = jwt.verify(token, refreshTokenSecret) as jwt.JwtPayload;
+        return {
+          token,
+          iat: typeof decoded.iat === "number" ? decoded.iat : 0,
+        };
+      } catch {
+        return null;
+      }
+    })
+    .filter((item): item is { token: string; iat: number } => item !== null)
+    .sort((a, b) => b.iat - a.iat)
+    .slice(0, MAX_ACTIVE_REFRESH_TOKENS)
+    .map((item) => item.token);
+};
+
+const getMostRecentRefreshToken = (
+  refreshTokens: string[],
+  refreshTokenSecret: string,
+): string | null => {
+  const sorted = keepMostRecentRefreshTokens(refreshTokens, refreshTokenSecret);
+  return sorted.length > 0 ? sorted[0] : null;
+};
 
 const usersController = {
   getAll: async (req: Request, res: Response) => {
-    const { id } = req.query
+    const { id } = req.query;
 
     const filters = {
       $expr: {
-        $and: [{ $eq: ['$_id', id] }]
-      }
-    }
+        $and: [{ $eq: ["$_id", id] }],
+      },
+    };
 
-    const users: IUser[] = await userService.getAll((id !== null && id !== undefined) ? filters : {})
+    const users: IUser[] = await userService.getAll(
+      id !== null && id !== undefined ? filters : {},
+    );
 
     return res.status(200).json({
       status: 200,
       total: users.length,
-      data: users
-    })
+      data: users,
+    });
   },
   getOne: async (req: Request, res: Response): Promise<Response> => {
-    const user: IUser = await userService.getOne({ _id: req.body.id })
+    const user: IUser = await userService.getOne({ _id: req.body.id });
 
     if (user === undefined || user === null) {
       return res.status(404).json({
         status: 404,
-        message: NOT_FOUND
-      })
+        message: NOT_FOUND,
+      });
     }
 
     return res.status(200).json({
       status: 200,
-      data: user
-    })
+      data: user,
+    });
   },
   login: async (req: Request, res: Response): Promise<Response> => {
-    const foundUser = await userService.getOne({ email: req.body.email })
+    const cookies = req.cookies;
+    console.log(`cookie available at login: ${JSON.stringify(cookies)}`);
+    const foundUser = await userService.getOne({ email: req.body.email });
 
     if (foundUser === undefined || foundUser === null) {
       return res.status(404).json({
         status: 404,
-        message: NOT_FOUND
-      })
+        message: NOT_FOUND,
+      });
     }
 
-    const isValidPassword: boolean = await foundUser.isValidPassword(req.body.password)
+    const isValidPassword: boolean = await foundUser.isValidPassword(
+      req.body.password,
+    );
 
-    if (!(isValidPassword)) {
+    if (!isValidPassword) {
       return res.status(404).json({
         status: 404,
-        message: INVALID_CREDENTIALS
-      })
+        message: INVALID_CREDENTIALS,
+      });
     }
 
-    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
+    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? "";
 
-    const role = await Role.findOne({ _id: foundUser.role._id })
+    const role = await Role.findOne({ _id: foundUser.role._id });
 
     const accessToken = jwt.sign(
       {
@@ -80,29 +166,47 @@ const usersController = {
         lastName: foundUser.lastName,
         email: foundUser.email,
         id: foundUser.id,
-        role: role?.code
+        role: role?.code,
       },
       ACCESS_TOKEN_SECRET,
-      { expiresIn: '1d' }
-    )
+      { expiresIn: "15m" },
+    );
 
-    const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? ''
+    const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? "";
 
-    const refreshToken = jwt.sign(
+    const newRefreshToken = jwt.sign(
       {
         firstName: foundUser.firstName,
         lastName: foundUser.lastName,
         email: foundUser.email,
-        id: foundUser.id
+        id: foundUser.id,
       },
       REFRESH_TOKEN_SECRET,
-      { expiresIn: '1d' }
-    )
+      { expiresIn: "1d" },
+    );
+
+    const validStoredRefreshTokens = sanitizeRefreshTokensForUser(
+      foundUser.refreshToken,
+      REFRESH_TOKEN_SECRET,
+      String(foundUser.id),
+      foundUser.email,
+    );
+    const newRefreshTokenArray = !cookies?.jwt
+      ? validStoredRefreshTokens
+      : validStoredRefreshTokens.filter((rt: string) => rt !== cookies.jwt);
+
+    if (cookies?.jwt) res.clearCookie("jwt", refreshCookieClearOptions);
 
     // saving refreshToken with current user
-    const currentUser = { ...foundUser._doc, refreshToken }
-    await userService.update(currentUser._id, currentUser)
-
+    const currentUser = {
+      ...foundUser._doc,
+      refreshToken: keepMostRecentRefreshTokens(
+        [...newRefreshTokenArray, newRefreshToken],
+        REFRESH_TOKEN_SECRET,
+      ),
+    };
+    await userService.update(currentUser._id, currentUser);
+    console.log(currentUser);
     // transporter
     //   .sendMail({
     //     from: "Finanzas App sebastianimfeld@gmail.com",
@@ -112,49 +216,129 @@ const usersController = {
     //   })
     //   .then((res) => console.log(res));
 
-    res.cookie('jwt', refreshToken, {
-      httpOnly: true,
-      // maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
-      sameSite: 'none'
-    })
+    res.cookie("jwt", newRefreshToken, refreshCookieOptions);
 
-    return res.json({ accessToken, role: role?.code })
+    return res.json({ accessToken, role: role?.code });
   },
   refreshToken: async (req: Request, res: Response): Promise<Response> => {
-    const cookies = req.cookies
-    const hasCookies: boolean = req.cookies?.jwt
+    const cookies = req.cookies;
+    const hasCookies: boolean = req.cookies?.jwt;
 
-    if (!hasCookies) return res.sendStatus(401)
+    if (!hasCookies) return res.sendStatus(401);
 
-    const refreshToken = cookies.jwt
+    const refreshToken = cookies.jwt;
 
-    const foundUser = await userService.getOne({ refreshToken })
+    const foundUser = await userService.getOne({ refreshToken });
+
+    // Detected refresh token reuse!
+
+    const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? "";
+    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? "";
+
+    let decoded;
 
     if (foundUser === undefined || foundUser === null) {
-      return res.status(404).json({
-        status: 404,
-        message: NOT_FOUND
-      })
+      try {
+        decoded = jwt.verify(
+          refreshToken,
+          REFRESH_TOKEN_SECRET,
+        ) as UserPayload & jwt.JwtPayload;
+        console.log(
+          "Refresh token not found in DB. Possible reuse or concurrent refresh.",
+        );
+        console.log(`User email from token: ${decoded.email}`);
+
+        const tokenOwner = await userService.getOne({
+          email: decoded.email,
+          _id: decoded.id,
+        });
+
+        if (tokenOwner !== undefined && tokenOwner !== null) {
+          const validOwnerRefreshTokens = sanitizeRefreshTokensForUser(
+            tokenOwner.refreshToken,
+            REFRESH_TOKEN_SECRET,
+            String(tokenOwner.id),
+            tokenOwner.email,
+          );
+
+          const tokenIssuedAt =
+            typeof decoded.iat === "number" ? decoded.iat : 0;
+          const tokenAgeSeconds =
+            tokenIssuedAt > 0
+              ? Math.floor(Date.now() / 1000) - tokenIssuedAt
+              : Number.MAX_SAFE_INTEGER;
+
+          if (
+            tokenAgeSeconds <= CONCURRENT_REFRESH_GRACE_SECONDS &&
+            validOwnerRefreshTokens.length > 0
+          ) {
+            const latestRefreshToken = getMostRecentRefreshToken(
+              validOwnerRefreshTokens,
+              REFRESH_TOKEN_SECRET,
+            );
+            const role = await Role.findOne({ _id: tokenOwner.role._id });
+
+            const accessToken = jwt.sign(
+              {
+                firstName: tokenOwner.firstName,
+                lastName: tokenOwner.lastName,
+                email: tokenOwner.email,
+                id: tokenOwner.id,
+                role: role?.code,
+              },
+              ACCESS_TOKEN_SECRET,
+              { expiresIn: "15m" },
+            );
+
+            if (latestRefreshToken !== null) {
+              res.cookie("jwt", latestRefreshToken, refreshCookieOptions);
+            }
+
+            return res.json({ accessToken, role: role?.code });
+          }
+        }
+      } catch (error) {
+        if (error) {
+          return res.status(403).json({
+            status: 403,
+            message: "Forbidden",
+          });
+        }
+      }
+      return res.status(403).json({
+        status: 403,
+        message: "Forbidden",
+      });
     }
 
-    const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? ''
-    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? ''
-
-    let decoded
+    const validStoredRefreshTokens = sanitizeRefreshTokensForUser(
+      foundUser.refreshToken,
+      REFRESH_TOKEN_SECRET,
+      String(foundUser.id),
+      foundUser.email,
+    );
+    const newRefreshTokenArray = validStoredRefreshTokens.filter(
+      (rt: string) => rt !== refreshToken,
+    );
 
     try {
-      decoded = jwt.verify(
-        refreshToken,
-        REFRESH_TOKEN_SECRET
-      ) as UserPayload
+      decoded = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as UserPayload;
     } catch (error) {
-      if (foundUser.email !== decoded?.email) {
-        return res.sendStatus(403)
+      if (error) {
+        console.log("Expired refresh token detected at refresh endpoint");
+        const currentUser = {
+          ...foundUser._doc,
+          refreshToken: [...newRefreshTokenArray],
+        };
+        await userService.update(foundUser._id, currentUser);
+        console.log(currentUser);
+      }
+      if (error || foundUser.email !== decoded?.email) {
+        return res.sendStatus(403);
       }
     }
 
-    const role = await Role.findOne({ _id: foundUser.role._id })
+    const role = await Role.findOne({ _id: foundUser.role._id });
 
     const accessToken = jwt.sign(
       {
@@ -162,121 +346,161 @@ const usersController = {
         lastName: decoded?.lastName,
         email: decoded?.email,
         id: decoded?.id,
-        role: role?.code
+        role: role?.code,
       },
       ACCESS_TOKEN_SECRET,
-      { expiresIn: '15m' }
-    )
-    return res.json({ accessToken, role: role?.code })
+      { expiresIn: "15m" },
+    );
+
+    const newRefreshToken = jwt.sign(
+      {
+        firstName: foundUser.firstName,
+        lastName: foundUser.lastName,
+        email: foundUser.email,
+        id: foundUser.id,
+      },
+      REFRESH_TOKEN_SECRET,
+      { expiresIn: "1d" },
+    );
+
+    // saving refreshToken with current user
+    const currentUser = {
+      ...foundUser._doc,
+      refreshToken: keepMostRecentRefreshTokens(
+        [...newRefreshTokenArray, newRefreshToken],
+        REFRESH_TOKEN_SECRET,
+      ),
+    };
+    await userService.update(currentUser._id, currentUser);
+    console.log("refresh token updated in db: ", currentUser);
+
+    res.cookie("jwt", newRefreshToken, refreshCookieOptions);
+
+    return res.json({ accessToken, role: role?.code });
   },
   logout: async (req: Request, res: Response): Promise<Response> => {
     // on client, also delete the accessToken
-    const cookies = req.cookies
+    const cookies = req.cookies;
 
-    const hasCookies: boolean = req.cookies?.jwt
+    const hasCookies: boolean = req.cookies?.jwt;
 
-    if (!hasCookies) return res.sendStatus(204) // No content
+    if (!hasCookies) return res.sendStatus(204); // No content
 
-    const refreshToken = cookies.jwt
+    const refreshToken = cookies.jwt;
+    const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? "";
 
     // Is refreshToken in db?
-    const foundUser = await userService.getOne({ refreshToken })
+    const foundUser = await userService.getOne({ refreshToken });
 
     if (foundUser === undefined || foundUser === null) {
-      res.clearCookie('jwt', {
-        httpOnly: true,
-        // maxAge: 24 * 60 * 60 * 1000,
-        secure: true,
-        sameSite: 'none'
-      })
-      return res.sendStatus(204)
+      res.clearCookie("jwt", {
+        ...refreshCookieClearOptions,
+      });
+      return res.sendStatus(204);
     }
 
     // Delete refreshToken in db
-    const currentUser = { ...foundUser._doc, refreshToken: '' }
-    await userService.update(currentUser._id, currentUser)
+    const validStoredRefreshTokens = sanitizeRefreshTokensForUser(
+      foundUser.refreshToken,
+      REFRESH_TOKEN_SECRET,
+      String(foundUser.id),
+      foundUser.email,
+    );
+    const currentUser = {
+      ...foundUser._doc,
+      refreshToken: validStoredRefreshTokens.filter(
+        (rt: string) => rt !== refreshToken,
+      ),
+    };
+    await userService.update(currentUser._id, currentUser);
+    console.log(currentUser);
 
-    res.clearCookie('jwt', {
-      httpOnly: true,
-      // maxAge: 24 * 60 * 60 * 1000,
-      secure: true,
-      sameSite: 'none'
-    })
+    res.clearCookie("jwt", {
+      ...refreshCookieClearOptions,
+    });
 
-    return res.sendStatus(204)
+    return res.sendStatus(204);
   },
   store: async (req: Request, res: Response): Promise<Response> => {
     if (
-      (req.body.firstName === undefined || req.body.firstName === null) ||
-      (req.body.lastName === undefined || req.body.lastName === null) ||
-      (req.body.password === undefined || req.body.password === null) ||
-      (req.body.email === undefined || req.body.password === null)
+      req.body.firstName === undefined ||
+      req.body.firstName === null ||
+      req.body.lastName === undefined ||
+      req.body.lastName === null ||
+      req.body.password === undefined ||
+      req.body.password === null ||
+      req.body.email === undefined ||
+      req.body.password === null
     ) {
       return res.status(400).json({
         status: 400,
         isStored: false,
-        message: MISSING_FIELDS_REQUIRED
-      })
+        message: MISSING_FIELDS_REQUIRED,
+      });
     }
 
     if (req.body.password.length < 6) {
       return res.status(400).json({
         status: 400,
         isStored: false,
-        message: INVALID_PASSWORD_LENGTH
-      })
+        message: INVALID_PASSWORD_LENGTH,
+      });
     }
 
-    const alreadyExist = await userService.getOne({ email: req.body.email })
+    const alreadyExist = await userService.getOne({ email: req.body.email });
 
     if (alreadyExist !== undefined && alreadyExist !== null) {
-      return res.sendStatus(409)
+      return res.sendStatus(409);
     }
 
-    const newUser = { ...req.body }
+    const newUser = { ...req.body };
 
     // agregra roles
     if (req.body.role !== undefined && req.body.role !== null) {
-      const foundRole = await Role.findOne({ _id: req.body.role })
-      newUser.role = foundRole?._id
+      const foundRole = await Role.findOne({ _id: req.body.role });
+      newUser.role = foundRole?._id;
     } else {
-      const role = await Role.findOne({ code: 2001 })
-      newUser.role = role?._id
+      const role = await Role.findOne({ code: 2001 });
+      newUser.role = role?._id;
     }
 
-    await userService.store(newUser)
+    await userService.store(newUser);
 
     return res.status(201).json({
       status: 201,
-      isStored: true
-    })
+      isStored: true,
+    });
   },
   update: async (req: Request, res: Response): Promise<Response> => {
     if (
-      (req.body.firstName === undefined || req.body.firstName === null) ||
-      (req.body.lastName === undefined || req.body.lastName === null)
+      req.body.firstName === undefined ||
+      req.body.firstName === null ||
+      req.body.lastName === undefined ||
+      req.body.lastName === null
       // (req.body.password === undefined || req.body.password === null) ||
       // (req.body.email === undefined || req.body.email === null)
     ) {
       return res.status(400).json({
         status: 400,
         isStored: false,
-        message: MISSING_FIELDS_REQUIRED
-      })
+        message: MISSING_FIELDS_REQUIRED,
+      });
     }
-    const { id } = req.params
+    const { id } = req.params;
 
-    const oldInforUser = await userService.getOne({ _id: id })
+    const oldInforUser = await userService.getOne({ _id: id });
 
     if (oldInforUser?.email !== req.body?.email) {
-      const alreadyExist: boolean = await userService.getOne({ email: req.body.email })
+      const alreadyExist: boolean = await userService.getOne({
+        email: req.body.email,
+      });
 
       if (alreadyExist) {
         return res.status(400).json({
           status: 400,
           isStored: false,
-          message: DUPLICATE_RECORD
-        })
+          message: DUPLICATE_RECORD,
+        });
       }
     }
 
@@ -286,110 +510,108 @@ const usersController = {
 
     const updateUser = await userService.update(id, {
       ...req.body,
-      updatedAt: new Date()
+      updatedAt: new Date(),
       // password: hash
-    })
+    });
 
     return res.status(201).json({
       status: 201,
       isUpdated: true,
-      data: updateUser !== 0 ? id : null
-    })
+      data: updateUser !== 0 ? id : null,
+    });
   },
   changePassword: async (req: Request, res: Response): Promise<Response> => {
-    if (
-      (req.body.password === undefined || req.body.password === null)
-    ) {
+    if (req.body.password === undefined || req.body.password === null) {
       return res.status(400).json({
         status: 400,
         isStored: false,
-        message: MISSING_FIELDS_REQUIRED
-      })
+        message: MISSING_FIELDS_REQUIRED,
+      });
     }
-    const { id } = req.params
+    const { id } = req.params;
 
-    const oldInforUser = await userService.getOne({ _id: id })
+    const oldInforUser = await userService.getOne({ _id: id });
 
     if (oldInforUser === undefined || oldInforUser === null) {
       return res.status(404).json({
         status: 404,
         isStored: false,
-        message: NOT_FOUND
-      })
+        message: NOT_FOUND,
+      });
     }
 
     // encriptamos
-    const jumps = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(req.body.password, jumps)
+    const jumps = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(req.body.password, jumps);
 
     const updateUser = await userService.update(id, {
       password: hash,
-      updatedAt: new Date()
-    })
+      updatedAt: new Date(),
+    });
 
     return res.status(201).json({
       status: 201,
       isUpdated: true,
-      data: updateUser !== 0 ? id : null
-    })
+      data: updateUser !== 0 ? id : null,
+    });
   },
   changeIsActive: async (req: Request, res: Response): Promise<Response> => {
-    const { id } = req.params
+    const { id } = req.params;
 
     if (req.body.isActive === null || req.body.isActive === undefined) {
       return res.status(400).json({
         status: 400,
         isStored: false,
-        message: MISSING_FIELDS_REQUIRED
-      })
+        message: MISSING_FIELDS_REQUIRED,
+      });
     }
 
-    const oldUser: UserType = await userService.getOne({ _id: id })
+    const oldUser: UserType = await userService.getOne({ _id: id });
 
     if (oldUser === null || oldUser === undefined) {
       return res.status(404).json({
         status: 404,
         isUpdated: false,
-        message: NOT_FOUND
-      })
+        message: NOT_FOUND,
+      });
     }
 
     if (oldUser.isActive === req.body.isActive) {
-      const status = req?.body?.isActive === true ? '"Activo"' : '"Inactivo"'
+      const status = req?.body?.isActive === true ? '"Activo"' : '"Inactivo"';
       return res.status(404).json({
         status: 400,
         isUpdated: false,
-        message: 'Ya se encuentra en el estado ' + status
-      })
+        message: "Ya se encuentra en el estado " + status,
+      });
     }
 
-    const userUpdated = await userService.updateIsActive(id, req.body.isActive)
+    const userUpdated = await userService.updateIsActive(id, req.body.isActive);
 
     return res.status(200).json({
       status: 200,
       isUpdated: true,
-      data: userUpdated
-    })
+      data: userUpdated,
+    });
   },
   delete: async (req: Request, res: Response): Promise<Response> => {
-    const { id } = req.params
+    const { id } = req.params;
 
-    const userDeleted = await userService.delete(id)
+    const userDeleted = await userService.delete(id);
 
     if (userDeleted === null || userDeleted === undefined) {
       return res.status(404).json({
         status: 404,
         isDeleted: false,
-        message: NOT_FOUND
-      })
+        message: NOT_FOUND,
+      });
     }
 
     return res.status(200).json({
       status: 200,
       isDeleted: true,
-      data: userDeleted
-    })
-  }
+      data: userDeleted,
+    });
+  },
   // recoverPassword: async (req, res) => {
   //   const { email } = req.body;
 
@@ -493,6 +715,6 @@ const usersController = {
   //   isUpdated: true
   // })
   // }
-}
+};
 
-export default usersController
+export default usersController;
