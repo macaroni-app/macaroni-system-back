@@ -4,6 +4,7 @@ export const InventorySchema = z.object({
   id: z.string().optional(),
   asset: z.string().min(24).max(24).optional(),
   quantityAvailable: z.number().nonnegative().optional(),
+  quantityReserved: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

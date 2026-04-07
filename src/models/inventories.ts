@@ -2,6 +2,7 @@ import { model, Schema, Document, SchemaTypes } from 'mongoose'
 export interface IInventory extends Document {
   asset: string
   quantityAvailable: Number
+  quantityReserved: Number
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
@@ -19,6 +20,10 @@ const inventorySchema = new Schema({
   quantityAvailable: {
     type: Number,
     required: true
+  },
+  quantityReserved: {
+    type: Number,
+    default: 0
   },
   createdAt: {
     type: Date,

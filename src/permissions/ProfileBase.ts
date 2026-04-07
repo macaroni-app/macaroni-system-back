@@ -20,6 +20,22 @@ const ProfileBase = {
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
   },
+  orderRequests: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    cancel: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    delete: [RoleCodes.ADMIN],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
+  },
+  orderRequestItems: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    cancel: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    delete: [RoleCodes.ADMIN],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER]
+  },
   products: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],

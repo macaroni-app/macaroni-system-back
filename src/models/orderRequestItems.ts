@@ -1,72 +1,40 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
 
-export enum SaleStatus {
-  PAID = 'PAID',
-  CANCELLED = 'CANCELLED'
-}
-
-export interface ISale extends Document {
-  isRetail: boolean
-  client: string
-  orderRequest?: string
-  paymentMethod: string
-  costTotal: number
-  total: number
-  discount: number
-  status: SaleStatus
-  business: string
-  isBilled: boolean
+export interface IOrderRequestItem extends Document {
+  orderRequest: string
+  product: string
+  quantity: number
+  unitPrice: number
+  subtotal: number
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
-  sortingDate: Date
   deletedAt: Date
   createdBy: string
   updatedBy: string
 }
 
-const saleSchema = new Schema({
-  isRetail: {
-    type: Boolean,
-    default: false
-  },
-  client: {
-    type: SchemaTypes.ObjectId,
-    ref: 'client',
-    required: true
-  },
+const orderRequestItemSchema = new Schema({
   orderRequest: {
     type: SchemaTypes.ObjectId,
-    ref: 'orderRequest'
+    ref: 'orderRequest',
+    required: true
   },
-  business: {
+  product: {
     type: SchemaTypes.ObjectId,
-    ref: 'business',
+    ref: 'product',
     required: true
   },
-  isBilled: {
-    type: Boolean,
-    default: false
-  },
-  paymentMethod: {
-    type: SchemaTypes.ObjectId,
-    ref: 'methodPayment',
-    required: true
-  },
-  costTotal: {
+  quantity: {
     type: Number,
     required: true
   },
-  total: {
+  unitPrice: {
     type: Number,
     required: true
   },
-  discount: {
+  subtotal: {
     type: Number,
-    default: 0
-  },
-  status: {
-    type: String,
     required: true
   },
   createdAt: {
@@ -107,11 +75,6 @@ const saleSchema = new Schema({
       return dateToSave
     }
   },
-  sortingDate: {
-    type: Date,
-    inmutable: true,
-    default: () => new Date()
-  },
   deletedAt: {
     type: Date
   },
@@ -131,6 +94,6 @@ const saleSchema = new Schema({
   }
 })
 
-const Sale = model<ISale>('sale', saleSchema)
+const OrderRequestItem = model<IOrderRequestItem>('orderRequestItem', orderRequestItemSchema)
 
-export default Sale
+export default OrderRequestItem

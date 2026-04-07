@@ -26,6 +26,8 @@ import rolesRouter from './routes/roles'
 import fixedCostRouter from './routes/fixedCosts'
 import reportsRouter from './routes/reports'
 import afipRouter from './routes/afip'
+import ordersRouter from './routes/orderRequests'
+import orderRequestItemsRouter from './routes/orderRequestItems'
 
 // middlewares
 // import credentials from './middlewares/credentials'
@@ -71,6 +73,8 @@ app.use('/api/v1/roles', rolesRouter)
 app.use('/api/v1/fixedCosts', fixedCostRouter)
 app.use('/api/v1/reports', reportsRouter)
 app.use('/api/v1/afip', afipRouter)
+app.use('/api/v1/orderRequests', ordersRouter)
+app.use('/api/v1/orderRequestItems', orderRequestItemsRouter)
 
 // app server listening
 const PORT = process.env.PORT ?? 3001

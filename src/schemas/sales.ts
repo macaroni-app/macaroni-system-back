@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const SaleSchema = z.object({
   isRetail: z.boolean().optional(),
   client: z.string().min(24).max(24).optional(),
+  orderRequest: z.string().min(24).max(24).optional(),
   business: z.string().min(24).max(24).optional(),
   paymentMethod: z.string().min(24).max(24).optional(),
   costTotal: z.number().nonnegative().optional(),

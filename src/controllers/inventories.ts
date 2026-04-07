@@ -140,9 +140,20 @@ const inventoriesController = {
 
     const data = await inventoryService.updateManyAtomic(inventoriesToUpdate)
 
+    if (data.failed.length > 0) {
+      const status = data.failed[0].message === NOT_FOUND ? 404 : 409
+
+      return res.status(status).json({
+        status,
+        isUpdated: false,
+        message: data.failed[0].message,
+        data
+      })
+    }
+
     return res.status(200).json({
       status: 200,
-      isUpdated: data.updated.length > 0,
+      isUpdated: true,
       data
     })
   }
