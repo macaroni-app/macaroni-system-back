@@ -106,7 +106,7 @@ const afipInvoiceController = {
     const documentTypes = await parametersService.getDocumentTypes()
 
     if (documentTypes == null) {
-      res.status(404).json({
+      return res.status(404).json({
         status: 404,
         message: 'No hay datos de los tipos de documentos'
       })
@@ -123,7 +123,7 @@ const afipInvoiceController = {
     const pointOfSales = await parametersService.getPointOfSales()
 
     if (pointOfSales == null) {
-      res.status(404).json({
+      return res.status(404).json({
         status: 404,
         message: 'No hay datos de los puntos de ventas'
       })
