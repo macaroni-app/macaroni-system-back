@@ -140,6 +140,25 @@ describe('orderRequestsController.getAll', () => {
     expect(res.status).toHaveBeenCalledWith(200)
   })
 
+  it('uses active order request filters without date limits when activeOnly=true', async () => {
+    const req = buildRequest({
+      activeOnly: 'true'
+    })
+    const res = buildResponse()
+    vi.spyOn(orderRequestServices, 'getAll').mockResolvedValue([] as never)
+    vi.spyOn(orderRequestItemsService, 'getAll').mockResolvedValue([] as never)
+
+    await orderRequestsController.getAll(req as never, res as never)
+
+    expect(orderRequestServices.getAll).toHaveBeenCalledWith({
+      status: {
+        $in: [OrderRequestStatus.DRAFT, OrderRequestStatus.CONFIRMED]
+      },
+      isDeleted: false
+    })
+    expect(res.status).toHaveBeenCalledWith(200)
+  })
+
   it('uses an empty filter when all=true and there are no specific filters', async () => {
     const req = buildRequest({
       all: 'true'

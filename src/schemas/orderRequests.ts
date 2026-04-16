@@ -67,6 +67,7 @@ export const GetOrderRequestSchema = z.object({
     clientName: z.string().optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
+    activeOnly: z.string().optional(),
     all: z.string().optional(),
     historyMonthToRetrieve: z.string().optional()
   })

@@ -83,6 +83,7 @@ const orderRequestsController = {
     const { id, orderCode, clientName } = req.query
 
     const all = req.query.all === 'true'
+    const activeOnly = req.query.activeOnly === 'true'
 
     let startDate = new Date()
     let endDate = new Date()
@@ -140,6 +141,13 @@ const orderRequestsController = {
         client: {
           $in: clientIds
         },
+        status: {
+          $in: [OrderRequestStatus.DRAFT, OrderRequestStatus.CONFIRMED]
+        },
+        isDeleted: false
+      }
+    } else if (activeOnly) {
+      queryFilters = {
         status: {
           $in: [OrderRequestStatus.DRAFT, OrderRequestStatus.CONFIRMED]
         },
