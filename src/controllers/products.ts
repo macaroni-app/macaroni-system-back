@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { productsService } from '../services/products'
-import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
-import { ChangeIsActiveProductBodyType, ChangeIsActiveProductParamsType, CreateProductBodyType, DeleteProductParamsType, GetProductParamsType, GetProductQueryType, ProductType, UpdateProductBodyType, UpdateProductParamsType } from '../schemas/products'
+import { INVALID_PRODUCT_PRICE, MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
+import { BulkUpdateProductPricesBodyType, ChangeIsActiveProductBodyType, ChangeIsActiveProductParamsType, CreateProductBodyType, DeleteProductParamsType, GetProductParamsType, GetProductQueryType, ProductType, UpdateProductBodyType, UpdateProductParamsType } from '../schemas/products'
 
 const productsController = {
   getAll: async (req: Request<{}, {}, {}, GetProductQueryType>, res: Response): Promise<Response> => {
@@ -118,6 +118,85 @@ const productsController = {
     return res.status(200).json({
       status: 200,
       isUpdated: true,
+      data: productsUpdated
+    })
+  },
+  updateManyPrices: async (req: Request<{}, {}, BulkUpdateProductPricesBodyType, {}>, res: Response): Promise<Response> => {
+    const productsToUpdate = req.body.products ?? []
+
+    if (productsToUpdate.length === 0) {
+      return res.status(400).json({
+        status: 400,
+        isUpdated: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const hasInvalidProduct = productsToUpdate.some((product) => {
+      return (
+        product.id === null ||
+        product.id === undefined ||
+        product.retailsalePrice === null ||
+        product.retailsalePrice === undefined ||
+        product.wholesalePrice === null ||
+        product.wholesalePrice === undefined
+      )
+    })
+
+    if (hasInvalidProduct) {
+      return res.status(400).json({
+        status: 400,
+        isUpdated: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    const hasInvalidPrice = productsToUpdate.some((product) => {
+      return (
+        Number.isNaN(Number(product.retailsalePrice)) ||
+        Number.isNaN(Number(product.wholesalePrice)) ||
+        Number(product.retailsalePrice) < 0 ||
+        Number(product.wholesalePrice) < 0
+      )
+    })
+
+    if (hasInvalidPrice) {
+      return res.status(400).json({
+        status: 400,
+        isUpdated: false,
+        message: INVALID_PRODUCT_PRICE
+      })
+    }
+
+    const productIds = [...new Set(productsToUpdate.map((product) => product.id))]
+    const activeProducts = await productsService.getAll({
+      _id: {
+        $in: productIds
+      },
+      isActive: true
+    })
+
+    if (activeProducts.length !== productIds.length) {
+      return res.status(404).json({
+        status: 404,
+        isUpdated: false,
+        message: NOT_FOUND
+      })
+    }
+
+    const updatedAt = new Date()
+    const productsUpdated = await productsService.updateManyPrices(productsToUpdate.map((product) => ({
+      id: product.id,
+      retailsalePrice: Number(product.retailsalePrice),
+      wholesalePrice: Number(product.wholesalePrice),
+      updatedAt,
+      updatedBy: req?.user?.id
+    })))
+
+    return res.status(200).json({
+      status: 200,
+      isUpdated: true,
+      total: productsToUpdate.length,
       data: productsUpdated
     })
   },

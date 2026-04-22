@@ -12,3 +12,4 @@ export const ORDER_REQUEST_ALREADY_CONVERTED = 'El pedido ya fue convertido a un
 export const ORDER_REQUEST_HAS_NO_ITEMS = 'El pedido debe tener al menos un producto.'
 export const INVALID_PAYMENT_AMOUNT = 'El monto del pago es inválido.'
 export const ORDER_REQUEST_HAS_PENDING_AMOUNT = 'El pedido todavía tiene saldo pendiente.'
+export const INVALID_PRODUCT_PRICE = 'El precio del producto es inválido.'

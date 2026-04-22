@@ -27,6 +27,18 @@ export const UpdateProductSchema = z.object({
   })
 })
 
+const BulkUpdateProductPriceSchema = z.object({
+  id: z.string().min(24).max(24),
+  wholesalePrice: z.number().nonnegative(),
+  retailsalePrice: z.number().nonnegative()
+})
+
+export const BulkUpdateProductPricesSchema = z.object({
+  body: z.object({
+    products: z.array(BulkUpdateProductPriceSchema)
+  })
+})
+
 export const GetProductSchema = z.object({
   params: z.object({
     id: z.string().min(24).max(24).optional()
@@ -54,6 +66,7 @@ export const ChangeIsActiveProductSchema = z.object({
 export type ProductType = z.infer<typeof ProductSchema>
 export type CreateProductBodyType = z.infer<typeof CreateProductSchema>['body']
 export type UpdateProductBodyType = z.infer<typeof UpdateProductSchema>['body']
+export type BulkUpdateProductPricesBodyType = z.infer<typeof BulkUpdateProductPricesSchema>['body']
 export type UpdateProductParamsType = z.infer<typeof UpdateProductSchema>['params']
 export type GetProductParamsType = z.infer<typeof GetProductSchema>['params']
 export type GetProductQueryType = z.infer<typeof GetProductSchema>['query']

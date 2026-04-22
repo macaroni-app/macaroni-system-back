@@ -6,7 +6,7 @@ import verifyToken from '../middlewares/validate-token'
 
 import { schemaValidator } from '../middlewares/schemaValidator'
 
-import { CreateProductSchema, DeleteProductSchema, DeleteProductParamsType, GetProductSchema, UpdateProductParamsType, UpdateProductBodyType, UpdateProductSchema, ChangeIsActiveProductSchema, ChangeIsActiveProductParamsType, ChangeIsActiveProductBodyType } from '../schemas/products'
+import { BulkUpdateProductPricesBodyType, BulkUpdateProductPricesSchema, CreateProductSchema, DeleteProductSchema, DeleteProductParamsType, GetProductSchema, UpdateProductParamsType, UpdateProductBodyType, UpdateProductSchema, ChangeIsActiveProductSchema, ChangeIsActiveProductParamsType, ChangeIsActiveProductBodyType } from '../schemas/products'
 
 import verifyRole from '../middlewares/verifyRoles'
 
@@ -22,6 +22,9 @@ productsRouter.get('/:id', [verifyToken as RequestHandler, verifyRole(ProfileBas
 
 // POST - http://localhost:3000/api/v1/products
 productsRouter.post('/', [verifyToken as RequestHandler, verifyRole(ProfileBase.products.create), schemaValidator(CreateProductSchema)], productsController.store as RequestHandler)
+
+// PUT - http://localhost:3000/api/v1/products/bulkUpdatePrices
+productsRouter.put('/bulkUpdatePrices', [verifyToken as RequestHandler, verifyRole(ProfileBase.products.edit), schemaValidator(BulkUpdateProductPricesSchema)], productsController.updateManyPrices as RequestHandler<{}, {}, BulkUpdateProductPricesBodyType, {}>)
 
 // PUT - http://localhost:3000/api/v1/products/:id
 productsRouter.put('/:id', [verifyToken as RequestHandler, verifyRole(ProfileBase.products.edit), schemaValidator(UpdateProductSchema)], productsController.update as RequestHandler<UpdateProductParamsType, {}, UpdateProductBodyType, {}>)

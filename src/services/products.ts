@@ -1,4 +1,4 @@
-import { FilterQuery } from 'mongoose'
+import { FilterQuery, Types } from 'mongoose'
 import Product from '../models/products'
 import { ProductType } from '../schemas/products'
 
@@ -42,6 +42,30 @@ export const productsService = {
       product.productType = newProductData.productType
 
       return await Product.updateOne({ _id: id }, { $set: { ...product } })
+    } catch (error) {
+      return error
+    }
+  },
+  updateManyPrices: async (productsToUpdate: Array<{ id: string, retailsalePrice: number, wholesalePrice: number, updatedAt: Date, updatedBy?: string }>) => {
+    try {
+      const operations = productsToUpdate.map((productToUpdate) => ({
+        updateOne: {
+          filter: {
+            _id: new Types.ObjectId(productToUpdate.id),
+            isActive: true
+          },
+          update: {
+            $set: {
+              retailsalePrice: productToUpdate.retailsalePrice,
+              wholesalePrice: productToUpdate.wholesalePrice,
+              updatedAt: productToUpdate.updatedAt,
+              updatedBy: productToUpdate.updatedBy
+            }
+          }
+        }
+      }))
+
+      return await Product.bulkWrite(operations)
     } catch (error) {
       return error
     }
