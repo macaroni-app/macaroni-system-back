@@ -1,10 +1,10 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
-export interface IInventory extends Document {
-  asset: string
-  assetVariant?: string
-  quantityAvailable: Number
-  quantityReserved: Number
+
+export interface IVariantAttributeValue extends Document {
+  name: string
+  attribute: string
   isDeleted: boolean
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date
@@ -12,23 +12,15 @@ export interface IInventory extends Document {
   updatedBy: string
 }
 
-const inventorySchema = new Schema({
-  asset: {
-    type: SchemaTypes.ObjectId,
-    ref: 'asset',
+const variantAttributeValueSchema = new Schema({
+  name: {
+    type: String,
     required: true
   },
-  assetVariant: {
+  attribute: {
     type: SchemaTypes.ObjectId,
-    ref: 'assetVariant'
-  },
-  quantityAvailable: {
-    type: Number,
+    ref: 'variantAttribute',
     required: true
-  },
-  quantityReserved: {
-    type: Number,
-    default: 0
   },
   createdAt: {
     type: Date,
@@ -46,6 +38,10 @@ const inventorySchema = new Schema({
     type: Boolean,
     default: false
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   createdBy: {
     type: SchemaTypes.ObjectId,
     ref: 'user',
@@ -58,6 +54,6 @@ const inventorySchema = new Schema({
   }
 })
 
-const Inventory = model<IInventory>('inventory', inventorySchema)
+const VariantAttributeValue = model<IVariantAttributeValue>('variantAttributeValue', variantAttributeValueSchema)
 
-export default Inventory
+export default VariantAttributeValue

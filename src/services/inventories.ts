@@ -5,6 +5,7 @@ import { INSUFFICIENT_INVENTORY, NOT_FOUND } from '../labels/labels'
 
 interface AtomicInventoryUpdateType {
   asset?: string
+  assetVariant?: string
   quantityDelta: number
   updatedBy?: string
 }
@@ -12,6 +13,7 @@ interface AtomicInventoryUpdateType {
 interface AtomicBulkInventoryUpdateType {
   id: string
   asset?: string
+  assetVariant?: string
   quantityDelta: number
   updatedBy?: string
 }
@@ -27,6 +29,7 @@ interface AtomicBulkInventoryUpdateResultType {
 interface AtomicBulkInventoryUpdatedItemType {
   id: string
   asset?: string
+  assetVariant?: string
   oldQuantityAvailable: number
   currentQuantityAvailable: number
   quantityAvailable: number
@@ -35,14 +38,36 @@ interface AtomicBulkInventoryUpdatedItemType {
 export const inventoryService = {
   getAll: (options: FilterQuery<InventoryType>) => {
     try {
-      return Inventory.find({ ...options }).populate('asset').sort({ createdAt: -1 })
+      return Inventory.find({ ...options }).populate('asset').populate({
+        path: 'assetVariant',
+        populate: [
+          { path: 'baseAsset' },
+          {
+            path: 'values',
+            populate: {
+              path: 'attribute'
+            }
+          }
+        ]
+      }).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
   },
   getOne: (options: FilterQuery<InventoryType> | undefined) => {
     try {
-      return Inventory.findOne({ ...options })
+      return Inventory.findOne({ ...options }).populate('asset').populate({
+        path: 'assetVariant',
+        populate: [
+          { path: 'baseAsset' },
+          {
+            path: 'values',
+            populate: {
+              path: 'attribute'
+            }
+          }
+        ]
+      })
     } catch (error) {
       return error
     }
@@ -65,6 +90,7 @@ export const inventoryService = {
     try {
       const inventory = await Inventory.findOne({ _id: id }) as InventoryType
       inventory.asset = newInventoryData?.asset
+      inventory.assetVariant = newInventoryData?.assetVariant
       inventory.quantityAvailable = newInventoryData?.quantityAvailable
 
       // return await inventory.save()
@@ -75,7 +101,7 @@ export const inventoryService = {
   },
   updateAtomic: async (id: string, newInventoryData: AtomicInventoryUpdateType) => {
     try {
-      const { asset, quantityDelta, updatedBy } = newInventoryData
+      const { asset, assetVariant, quantityDelta, updatedBy } = newInventoryData
       const filter: {
         _id: string
         quantityAvailable?: { $gte: number }
@@ -98,12 +124,16 @@ export const inventoryService = {
         }
       }
 
-      const $set: { updatedAt: Date, updatedBy?: string, asset?: string } = {
+      const $set: { updatedAt: Date, updatedBy?: string, asset?: string, assetVariant?: string } = {
         updatedAt: new Date()
       }
 
       if (asset !== undefined) {
         $set.asset = asset
+      }
+
+      if (assetVariant !== undefined) {
+        $set.assetVariant = assetVariant
       }
 
       if (updatedBy !== undefined) {
@@ -165,7 +195,7 @@ export const inventoryService = {
             }
           }
 
-          const $set: { updatedAt: Date, updatedBy?: string, asset?: string } = {
+          const $set: { updatedAt: Date, updatedBy?: string, asset?: string, assetVariant?: string } = {
             updatedAt: new Date()
           }
 
@@ -175,6 +205,10 @@ export const inventoryService = {
 
           if (inventoryToUpdate.asset !== undefined) {
             $set.asset = inventoryToUpdate.asset
+          }
+
+          if (inventoryToUpdate.assetVariant !== undefined) {
+            $set.assetVariant = inventoryToUpdate.assetVariant
           }
 
           const inventoryBeforeUpdate = await Inventory.findOneAndUpdate(
@@ -200,6 +234,7 @@ export const inventoryService = {
           updated.push({
             id: inventoryBeforeUpdate.id,
             asset: inventoryToUpdate.asset,
+            assetVariant: inventoryToUpdate.assetVariant,
             oldQuantityAvailable,
             currentQuantityAvailable,
             quantityAvailable: currentQuantityAvailable

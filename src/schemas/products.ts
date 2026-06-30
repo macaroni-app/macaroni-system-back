@@ -44,7 +44,9 @@ export const GetProductSchema = z.object({
     id: z.string().min(24).max(24).optional()
   }),
   query: z.object({
-    id: z.string().min(24).max(24).optional()
+    id: z.string().min(24).max(24).optional(),
+    isActive: z.enum(['true', 'false']).optional(),
+    all: z.enum(['true']).optional()
   })
 })
 

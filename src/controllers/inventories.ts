@@ -94,6 +94,7 @@ const inventoriesController = {
 
     const inventoryUpdated = await inventoryService.updateAtomic(id, {
       asset: req.body.asset,
+      assetVariant: req.body.assetVariant,
       quantityDelta: req.body.quantityDelta,
       updatedBy: req?.user?.id
     })

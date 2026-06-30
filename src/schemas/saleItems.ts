@@ -1,11 +1,53 @@
 import { z } from 'zod'
 
+const emptyStringToUndefined = (value: unknown): unknown => {
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined
+  }
+
+  return value
+}
+
+const sanitizeVariantSelections = (value: unknown): unknown => {
+  if (!Array.isArray(value)) {
+    return value
+  }
+
+  return value.filter((selection) => {
+    if (selection == null || typeof selection !== 'object') {
+      return false
+    }
+
+    const currentSelection = selection as {
+      productItem?: unknown
+      assetVariant?: unknown
+      quantity?: unknown
+    }
+
+    const hasProductItem = typeof currentSelection.productItem === 'string' && currentSelection.productItem.trim().length > 0
+    const hasAssetVariant = typeof currentSelection.assetVariant === 'string' && currentSelection.assetVariant.trim().length > 0
+    const hasQuantity = Number(currentSelection.quantity ?? 0) > 0
+
+    return hasProductItem || hasAssetVariant || hasQuantity
+  })
+}
+
+const SaleItemVariantSelectionSchema = z.object({
+  productItem: z.preprocess(emptyStringToUndefined, z.string().min(24).max(24)),
+  assetVariant: z.preprocess(emptyStringToUndefined, z.string().min(24).max(24)),
+  quantity: z.number().positive()
+})
+
 export const SaleItemSchema = z.object({
   id: z.string().optional(),
   sale: z.string().min(24).max(24).optional(),
   product: z.string().min(24).max(24).optional(),
   quantity: z.number().nonnegative().optional(),
   subtotal: z.number().nonnegative().optional(),
+  variantSelections: z.preprocess(
+    sanitizeVariantSelections,
+    z.array(SaleItemVariantSelectionSchema).optional()
+  ),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

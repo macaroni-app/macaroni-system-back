@@ -1,18 +1,30 @@
 import { FilterQuery } from 'mongoose'
-import ProductItem, { IProductItem } from '../models/productItems'
+import ProductItem, { IProductItem, ProductItemSelectionType } from '../models/productItems'
 import { ProductItemsType } from '../schemas/productItems'
+
+const productItemPopulate = [
+  { path: 'product' },
+  { path: 'asset' },
+  { path: 'baseAsset' },
+  {
+    path: 'allowedVariantValues',
+    populate: {
+      path: 'attribute'
+    }
+  }
+]
 
 export const productItemsService = {
   getAll: (options: FilterQuery<ProductItemsType>) => {
     try {
-      return ProductItem.find({ ...options }).populate('product').populate('asset').sort({ createdAt: -1 })
+      return ProductItem.find({ ...options }).populate(productItemPopulate).sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
   },
   getOne: (options: FilterQuery<ProductItemsType> | undefined) => {
     try {
-      return ProductItem.findOne({ ...options })
+      return ProductItem.findOne({ ...options }).populate(productItemPopulate)
     } catch (error) {
       return error
     }
@@ -36,6 +48,9 @@ export const productItemsService = {
       const productItem = await ProductItem.findOne({ _id: id }) as ProductItemsType
       productItem.product = newProductItemData?.product
       productItem.asset = newProductItemData?.asset
+      productItem.baseAsset = newProductItemData?.baseAsset
+      productItem.selectionType = newProductItemData?.selectionType ?? ProductItemSelectionType.FIXED
+      productItem.allowedVariantValues = newProductItemData?.allowedVariantValues ?? []
       productItem.quantity = newProductItemData?.quantity
 
       return await ProductItem.updateOne({ _id: id }, { $set: { ...productItem } })
@@ -60,6 +75,9 @@ export const productItemsService = {
           if (productItem.id === productItemToUpdate.id) {
             productItem.quantity = productItemToUpdate.quantity
             productItem.asset = productItemToUpdate.asset
+            productItem.baseAsset = productItemToUpdate.baseAsset
+            productItem.selectionType = productItemToUpdate.selectionType ?? ProductItemSelectionType.FIXED
+            productItem.allowedVariantValues = productItemToUpdate.allowedVariantValues ?? []
             productItem.product = productItemToUpdate.product
             productItemsUpdated.push(productItem)
           }

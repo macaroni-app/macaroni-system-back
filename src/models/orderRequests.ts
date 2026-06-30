@@ -16,6 +16,7 @@ export enum OrderRequestPaymentStatus {
 interface IOrderRequestReservedItem {
   inventory: string
   asset: string
+  assetVariant?: string
   quantity: number
 }
 
@@ -139,6 +140,10 @@ const orderRequestSchema = new Schema({
         type: SchemaTypes.ObjectId,
         ref: 'asset',
         required: true
+      },
+      assetVariant: {
+        type: SchemaTypes.ObjectId,
+        ref: 'assetVariant'
       },
       quantity: {
         type: Number,

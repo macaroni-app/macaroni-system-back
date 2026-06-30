@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { INVALID_ORDER_REQUEST_STATUS, MISSING_FIELDS_REQUIRED, NOT_FOUND, ORDER_REQUEST_ALREADY_CONVERTED, ORDER_REQUEST_HAS_NO_ITEMS } from '../labels/labels'
+import { INVALID_ORDER_REQUEST_STATUS, INVALID_VARIANT_SELECTION, MISSING_FIELDS_REQUIRED, NOT_FOUND, ORDER_REQUEST_ALREADY_CONVERTED, ORDER_REQUEST_HAS_NO_ITEMS } from '../labels/labels'
 import { orderRequestItemsService } from '../services/orderRequestItems'
 import { CreateManyOrderRequestItemsBodyType, CreateOrderRequestItemBodyType, DeleteManyOrderRequestItemsBodyType, DeleteOrderRequestItemParamsType, GetOrderRequestItemParamsType, GetOrderRequestItemQueryType, OrderRequestItemType, UpdateOrderRequestItemBodyType, UpdateOrderRequestItemParamsType } from '../schemas/orderRequestItems'
 import { IOrderRequestItem } from '../models/orderRequestItems'
@@ -17,6 +17,8 @@ const mapWorkflowError = (errorMessage: string): { status: number, message: stri
       return { status: 409, message: INVALID_ORDER_REQUEST_STATUS }
     case ORDER_REQUEST_HAS_NO_ITEMS:
       return { status: 409, message: ORDER_REQUEST_HAS_NO_ITEMS }
+    case INVALID_VARIANT_SELECTION:
+      return { status: 409, message: INVALID_VARIANT_SELECTION }
     default:
       return { status: 400, message: errorMessage }
   }

@@ -1,11 +1,18 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
 
+interface IOrderRequestItemVariantSelection {
+  productItem: string
+  assetVariant: string
+  quantity: number
+}
+
 export interface IOrderRequestItem extends Document {
   orderRequest: string
   product: string
   quantity: number
   unitPrice: number
   subtotal: number
+  variantSelections?: IOrderRequestItemVariantSelection[]
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
@@ -36,6 +43,25 @@ const orderRequestItemSchema = new Schema({
   subtotal: {
     type: Number,
     required: true
+  },
+  variantSelections: {
+    type: [{
+      productItem: {
+        type: SchemaTypes.ObjectId,
+        ref: 'productItem',
+        required: true
+      },
+      assetVariant: {
+        type: SchemaTypes.ObjectId,
+        ref: 'assetVariant',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      }
+    }],
+    default: []
   },
   createdAt: {
     type: Date,

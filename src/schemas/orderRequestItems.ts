@@ -1,5 +1,11 @@
 import { z } from 'zod'
 
+const OrderRequestItemVariantSelectionSchema = z.object({
+  productItem: z.string().min(24).max(24),
+  assetVariant: z.string().min(24).max(24),
+  quantity: z.number().positive()
+})
+
 export const OrderRequestItemSchema = z.object({
   id: z.string().optional(),
   orderRequest: z.string().min(24).max(24).optional(),
@@ -7,6 +13,7 @@ export const OrderRequestItemSchema = z.object({
   quantity: z.number().positive().optional(),
   unitPrice: z.number().nonnegative().optional(),
   subtotal: z.number().nonnegative().optional(),
+  variantSelections: z.array(OrderRequestItemVariantSelectionSchema).optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),

@@ -1,9 +1,16 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
+
+interface ISaleItemVariantSelection {
+  productItem: string
+  assetVariant: string
+  quantity: number
+}
 export interface ISaleItem extends Document {
   sale: string
   product: string
   quantity: number
   subtotal: number
+  variantSelections?: ISaleItemVariantSelection[]
   isDeleted: boolean
   createdAt: Date
   updatedAt: Date
@@ -29,6 +36,25 @@ const saleItemSchema = new Schema({
   subtotal: {
     type: Number,
     required: true
+  },
+  variantSelections: {
+    type: [{
+      productItem: {
+        type: SchemaTypes.ObjectId,
+        ref: 'productItem',
+        required: true
+      },
+      assetVariant: {
+        type: SchemaTypes.ObjectId,
+        ref: 'assetVariant',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      }
+    }],
+    default: []
   },
   createdAt: {
     type: Date,

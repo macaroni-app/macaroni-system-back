@@ -1,9 +1,35 @@
 import { z } from 'zod'
 
+export const PRODUCT_ITEM_SELECTION_TYPES = ['FIXED', 'VARIANT_SELECTION'] as const
+
+const emptyStringToUndefined = (value: unknown): unknown => {
+  if (typeof value === 'string' && value.trim() === '') {
+    return undefined
+  }
+
+  return value
+}
+
+const sanitizeStringArray = (value: unknown): unknown => {
+  if (!Array.isArray(value)) {
+    return value
+  }
+
+  return value.filter((item) => typeof item === 'string' && item.trim().length > 0)
+}
+
+const VariantSelectionValuesSchema = z.preprocess(
+  sanitizeStringArray,
+  z.array(z.string().min(24).max(24))
+)
+
 export const ProductItemsSchema = z.object({
   id: z.string().optional(),
-  product: z.string().min(24).max(24).optional(),
-  asset: z.string().min(24).max(24).optional(),
+  product: z.preprocess(emptyStringToUndefined, z.string().min(24).max(24).optional()),
+  asset: z.preprocess(emptyStringToUndefined, z.string().min(24).max(24).optional()),
+  baseAsset: z.preprocess(emptyStringToUndefined, z.string().min(24).max(24).optional()),
+  selectionType: z.enum(PRODUCT_ITEM_SELECTION_TYPES).optional(),
+  allowedVariantValues: VariantSelectionValuesSchema.optional(),
   quantity: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
   createdAt: z.date().optional(),
@@ -11,6 +37,24 @@ export const ProductItemsSchema = z.object({
   deletedAt: z.date().optional(),
   createdBy: z.string().min(24).max(24).optional(),
   updatedBy: z.string().min(24).max(24).optional()
+}).superRefine((value, context) => {
+  const selectionType = value.selectionType ?? 'FIXED'
+
+  if (selectionType === 'VARIANT_SELECTION') {
+    if (value.baseAsset === undefined) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['baseAsset'],
+        message: 'Complete el campo'
+      })
+    }
+  } else if (value.asset === undefined) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['asset'],
+      message: 'Complete el campo'
+    })
+  }
 })
 
 export const CreateProductItemsSchema = z.object({

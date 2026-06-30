@@ -8,6 +8,31 @@ export const orderRequestItemsService = {
       return OrderRequestItem.find({ ...options })
         .populate({ path: 'product', populate: { path: 'productType', select: 'name' } })
         .populate('orderRequest')
+        .populate({
+          path: 'variantSelections.productItem',
+          populate: [
+            { path: 'asset' },
+            { path: 'baseAsset' },
+            {
+              path: 'allowedVariantValues',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
+        .populate({
+          path: 'variantSelections.assetVariant',
+          populate: [
+            { path: 'baseAsset' },
+            {
+              path: 'values',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
         .sort({ createdAt: -1 })
     } catch (error) {
       return error
@@ -18,6 +43,31 @@ export const orderRequestItemsService = {
       return OrderRequestItem.findOne({ ...options })
         .populate({ path: 'product', populate: { path: 'productType', select: 'name' } })
         .populate('orderRequest')
+        .populate({
+          path: 'variantSelections.productItem',
+          populate: [
+            { path: 'asset' },
+            { path: 'baseAsset' },
+            {
+              path: 'allowedVariantValues',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
+        .populate({
+          path: 'variantSelections.assetVariant',
+          populate: [
+            { path: 'baseAsset' },
+            {
+              path: 'values',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
     } catch (error) {
       return error
     }
@@ -44,6 +94,7 @@ export const orderRequestItemsService = {
       orderRequestItem.quantity = newOrderRequestItemData?.quantity
       orderRequestItem.unitPrice = newOrderRequestItemData?.unitPrice
       orderRequestItem.subtotal = newOrderRequestItemData?.subtotal
+      orderRequestItem.variantSelections = newOrderRequestItemData?.variantSelections ?? []
       orderRequestItem.updatedAt = newOrderRequestItemData?.updatedAt
       orderRequestItem.updatedBy = newOrderRequestItemData?.updatedBy
 

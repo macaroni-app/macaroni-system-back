@@ -5,7 +5,22 @@ import { InventoryTransactionType } from '../schemas/inventoryTransactions'
 export const inventoryTransactionService = {
   getAll: (options: FilterQuery<InventoryTransactionType>) => {
     try {
-      return InventoryTransaction.find({ ...options }).populate('asset').populate('createdBy', ['firstName', 'lastName']).sort({ sortingDate: -1 })
+      return InventoryTransaction.find({ ...options })
+        .populate('asset')
+        .populate({
+          path: 'assetVariant',
+          populate: [
+            { path: 'baseAsset' },
+            {
+              path: 'values',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
+        .populate('createdBy', ['firstName', 'lastName'])
+        .sort({ sortingDate: -1 })
     } catch (error) {
       return error
     }
@@ -35,6 +50,7 @@ export const inventoryTransactionService = {
     try {
       const inventory = await InventoryTransaction.findOne({ _id: id }) as InventoryTransactionType
       inventory.asset = newInventoryTransactionData?.asset
+      inventory.assetVariant = newInventoryTransactionData?.assetVariant
       inventory.transactionType = newInventoryTransactionData?.transactionType
       inventory.transactionReason = newInventoryTransactionData?.transactionReason
       inventory.affectedAmount = newInventoryTransactionData?.affectedAmount
@@ -63,6 +79,7 @@ export const inventoryTransactionService = {
         return inventoryTransactionsToUpdate.forEach((inventoryTransactionToUpdate) => {
           if (inventoryTransaction.id === inventoryTransactionToUpdate.id) {
             inventoryTransaction.asset = inventoryTransactionToUpdate.asset
+            inventoryTransaction.assetVariant = inventoryTransactionToUpdate.assetVariant
             inventoryTransaction.affectedAmount = inventoryTransactionToUpdate.affectedAmount
             inventoryTransaction.oldQuantityAvailable = inventoryTransactionToUpdate.oldQuantityAvailable
             inventoryTransaction.currentQuantityAvailable = inventoryTransactionToUpdate.currentQuantityAvailable

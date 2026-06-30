@@ -1,10 +1,13 @@
 import { model, Schema, Document, SchemaTypes } from 'mongoose'
-export interface IInventory extends Document {
-  asset: string
-  assetVariant?: string
-  quantityAvailable: Number
-  quantityReserved: Number
+
+export interface IAssetVariant extends Document {
+  name: string
+  baseAsset: string
+  values: string[]
+  sku?: string
+  costPrice?: number
   isDeleted: boolean
+  isActive: boolean
   createdAt: Date
   updatedAt: Date
   deletedAt: Date
@@ -12,23 +15,29 @@ export interface IInventory extends Document {
   updatedBy: string
 }
 
-const inventorySchema = new Schema({
-  asset: {
+const assetVariantSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  baseAsset: {
     type: SchemaTypes.ObjectId,
     ref: 'asset',
     required: true
   },
-  assetVariant: {
-    type: SchemaTypes.ObjectId,
-    ref: 'assetVariant'
+  values: {
+    type: [{
+      type: SchemaTypes.ObjectId,
+      ref: 'variantAttributeValue',
+      required: true
+    }],
+    default: []
   },
-  quantityAvailable: {
-    type: Number,
-    required: true
+  sku: {
+    type: String
   },
-  quantityReserved: {
-    type: Number,
-    default: 0
+  costPrice: {
+    type: Number
   },
   createdAt: {
     type: Date,
@@ -46,6 +55,10 @@ const inventorySchema = new Schema({
     type: Boolean,
     default: false
   },
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   createdBy: {
     type: SchemaTypes.ObjectId,
     ref: 'user',
@@ -58,6 +71,6 @@ const inventorySchema = new Schema({
   }
 })
 
-const Inventory = model<IInventory>('inventory', inventorySchema)
+const AssetVariant = model<IAssetVariant>('assetVariant', assetVariantSchema)
 
-export default Inventory
+export default AssetVariant

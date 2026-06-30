@@ -4,6 +4,8 @@ import { MISSING_FIELDS_REQUIRED, NOT_FOUND } from '../labels/labels'
 import { CreateManyProductItemsBodyType, CreateProductItemsBodyType, DeleteProductItemsParamsType, GetProductItemsParamsType, GetProductItemsQueryType, ProductItemsType, UpdateProductItemsBodyType, UpdateProductItemsParamsType, UpdateManyProductItemsBodyType, DeleteManyProductItemsBodyType } from '../schemas/productItems'
 import { IProductItem } from '../models/productItems'
 
+const isVariantSelectionItem = (selectionType?: string): boolean => selectionType === 'VARIANT_SELECTION'
+
 const productItemsController = {
   getAll: async (req: Request<{}, {}, {}, GetProductItemsQueryType>, res: Response): Promise<Response> => {
     const { id } = req.query
@@ -42,8 +44,18 @@ const productItemsController = {
   store: async (req: Request<{}, {}, CreateProductItemsBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.product === null || req.body.product === undefined) ||
-      (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.quantity === null || req.body.quantity === undefined)
+    ) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    if (
+      (!isVariantSelectionItem(req.body.selectionType) && (req.body.asset === null || req.body.asset === undefined)) ||
+      (isVariantSelectionItem(req.body.selectionType) && (req.body.baseAsset === null || req.body.baseAsset === undefined))
     ) {
       return res.status(400).json({
         status: 400,
@@ -107,8 +119,18 @@ const productItemsController = {
   update: async (req: Request<UpdateProductItemsParamsType, {}, UpdateProductItemsBodyType, {}>, res: Response): Promise<Response> => {
     if (
       (req.body.product === null || req.body.product === undefined) ||
-      (req.body.asset === null || req.body.asset === undefined) ||
       (req.body.quantity === null || req.body.quantity === undefined)
+    ) {
+      return res.status(400).json({
+        status: 400,
+        isStored: false,
+        message: MISSING_FIELDS_REQUIRED
+      })
+    }
+
+    if (
+      (!isVariantSelectionItem(req.body.selectionType) && (req.body.asset === null || req.body.asset === undefined)) ||
+      (isVariantSelectionItem(req.body.selectionType) && (req.body.baseAsset === null || req.body.baseAsset === undefined))
     ) {
       return res.status(400).json({
         status: 400,

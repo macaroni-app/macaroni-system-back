@@ -5,7 +5,35 @@ import { SaleItemType } from '../schemas/saleItems'
 export const saleItemsService = {
   getAll: (options: FilterQuery<SaleItemType>) => {
     try {
-      return SaleItem.find({ ...options }).populate({ path: 'product', populate: { path: 'productType', select: 'name' } }).populate('sale').sort({ createdAt: -1 })
+      return SaleItem.find({ ...options })
+        .populate({ path: 'product', populate: { path: 'productType', select: 'name' } })
+        .populate('sale')
+        .populate({
+          path: 'variantSelections.productItem',
+          populate: [
+            { path: 'asset' },
+            { path: 'baseAsset' },
+            {
+              path: 'allowedVariantValues',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
+        .populate({
+          path: 'variantSelections.assetVariant',
+          populate: [
+            { path: 'baseAsset' },
+            {
+              path: 'values',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
+        .sort({ createdAt: -1 })
     } catch (error) {
       return error
     }
@@ -13,6 +41,33 @@ export const saleItemsService = {
   getOne: (options: FilterQuery<SaleItemType>) => {
     try {
       return SaleItem.findOne({ ...options })
+        .populate({ path: 'product', populate: { path: 'productType', select: 'name' } })
+        .populate('sale')
+        .populate({
+          path: 'variantSelections.productItem',
+          populate: [
+            { path: 'asset' },
+            { path: 'baseAsset' },
+            {
+              path: 'allowedVariantValues',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
+        .populate({
+          path: 'variantSelections.assetVariant',
+          populate: [
+            { path: 'baseAsset' },
+            {
+              path: 'values',
+              populate: {
+                path: 'attribute'
+              }
+            }
+          ]
+        })
     } catch (error) {
       return error
     }
@@ -38,6 +93,7 @@ export const saleItemsService = {
       sale.product = newSaleData?.product
       sale.quantity = newSaleData?.quantity
       sale.subtotal = newSaleData?.subtotal
+      sale.variantSelections = newSaleData?.variantSelections ?? []
 
       return await SaleItem.updateOne({ _id: id }, { $set: { ...sale } })
     } catch (error) {

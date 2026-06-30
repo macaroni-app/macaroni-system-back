@@ -3,6 +3,7 @@ import { z } from 'zod'
 export const InventorySchema = z.object({
   id: z.string().optional(),
   asset: z.string().min(24).max(24).optional(),
+  assetVariant: z.string().min(24).max(24).optional(),
   quantityAvailable: z.number().nonnegative().optional(),
   quantityReserved: z.number().nonnegative().optional(),
   isDeleted: z.boolean().optional(),
@@ -23,6 +24,7 @@ export const UpdateManyInventorySchema = z.object({
       z.object({
         id: z.string().min(24).max(24),
         asset: z.string().min(24).max(24).optional(),
+        assetVariant: z.string().min(24).max(24).optional(),
         quantityDelta: z.number().int()
       })
     )
@@ -32,6 +34,7 @@ export const UpdateManyInventorySchema = z.object({
 export const UpdateInventorySchema = z.object({
   body: z.object({
     asset: z.string().min(24).max(24).optional(),
+    assetVariant: z.string().min(24).max(24).optional(),
     quantityDelta: z.number().int()
   }),
   params: z.object({

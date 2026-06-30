@@ -5,7 +5,7 @@ import { BulkUpdateProductPricesBodyType, ChangeIsActiveProductBodyType, ChangeI
 
 const productsController = {
   getAll: async (req: Request<{}, {}, {}, GetProductQueryType>, res: Response): Promise<Response> => {
-    const { id } = req.query
+    const { id, isActive, all } = req.query
 
     const filters = {
       $expr: {
@@ -13,13 +13,20 @@ const productsController = {
       }
     }
 
+    const statusFilter =
+      all === 'true'
+        ? {}
+        : isActive !== undefined
+          ? { isActive: isActive === 'true' }
+          : {
+              $expr: {
+                $and: [{ $eq: ['$isActive', true] }]
+              }
+            }
+
     const products: ProductType[] = await productsService.getAll((id !== null && id !== undefined)
       ? filters
-      : {
-          $expr: {
-            $and: [{ $eq: ['$isActive', true] }]
-          }
-        })
+      : statusFilter)
 
     return res.status(200).json({
       status: 200,

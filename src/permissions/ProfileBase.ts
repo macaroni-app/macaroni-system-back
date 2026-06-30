@@ -60,6 +60,30 @@ const ProfileBase = {
     view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
     viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
   },
+  variantAttributes: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    delete: [RoleCodes.ADMIN],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
+  },
+  variantAttributeValues: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    delete: [RoleCodes.ADMIN],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
+  },
+  assetVariants: {
+    create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    deactivate: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
+    delete: [RoleCodes.ADMIN],
+    view: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],
+    viewActions: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR]
+  },
   inventories: {
     create: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR],
     edit: [RoleCodes.ADMIN, RoleCodes.SUPERVISOR, RoleCodes.SELLER],

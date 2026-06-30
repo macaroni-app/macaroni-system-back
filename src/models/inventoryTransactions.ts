@@ -18,6 +18,7 @@ export enum TransactionReason {
 
 export interface IInventoryTransaction extends Document {
   asset: string
+  assetVariant?: string
   transactionType: TransactionType
   transactionReason: TransactionReason
   affectedAmount: Number
@@ -38,6 +39,10 @@ const inventoryTransactionSchema = new Schema({
     type: SchemaTypes.ObjectId,
     ref: 'asset',
     required: true
+  },
+  assetVariant: {
+    type: SchemaTypes.ObjectId,
+    ref: 'assetVariant'
   },
   transactionType: {
     type: String,

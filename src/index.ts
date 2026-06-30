@@ -28,6 +28,9 @@ import reportsRouter from './routes/reports'
 import afipRouter from './routes/afip'
 import ordersRouter from './routes/orderRequests'
 import orderRequestItemsRouter from './routes/orderRequestItems'
+import variantAttributesRouter from './routes/variantAttributes'
+import variantAttributeValuesRouter from './routes/variantAttributeValues'
+import assetVariantsRouter from './routes/assetVariants'
 
 // middlewares
 // import credentials from './middlewares/credentials'
@@ -75,6 +78,9 @@ app.use('/api/v1/reports', reportsRouter)
 app.use('/api/v1/afip', afipRouter)
 app.use('/api/v1/orderRequests', ordersRouter)
 app.use('/api/v1/orderRequestItems', orderRequestItemsRouter)
+app.use('/api/v1/variantAttributes', variantAttributesRouter)
+app.use('/api/v1/variantAttributeValues', variantAttributeValuesRouter)
+app.use('/api/v1/assetVariants', assetVariantsRouter)
 
 // app server listening
 const PORT = process.env.PORT ?? 3001
