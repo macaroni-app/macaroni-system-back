@@ -5,11 +5,19 @@ export enum SaleStatus {
   CANCELLED = 'CANCELLED'
 }
 
+export enum SalePaymentChannel {
+  CASH = 'CASH',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  QR = 'QR',
+  CARD = 'CARD'
+}
+
 export interface ISale extends Document {
   isRetail: boolean
   client: string
   orderRequest?: string
   paymentMethod: string
+  paymentChannel?: SalePaymentChannel
   costTotal: number
   total: number
   discount: number
@@ -52,6 +60,10 @@ const saleSchema = new Schema({
     type: SchemaTypes.ObjectId,
     ref: 'methodPayment',
     required: true
+  },
+  paymentChannel: {
+    type: String,
+    enum: Object.values(SalePaymentChannel)
   },
   costTotal: {
     type: Number,

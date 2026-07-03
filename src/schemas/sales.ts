@@ -1,11 +1,14 @@
 import { z } from 'zod'
 
+export const SALE_PAYMENT_CHANNELS = ['CASH', 'BANK_TRANSFER', 'QR', 'CARD'] as const
+
 export const SaleSchema = z.object({
   isRetail: z.boolean().optional(),
   client: z.string().min(24).max(24).optional(),
   orderRequest: z.string().min(24).max(24).optional(),
   business: z.string().min(24).max(24).optional(),
   paymentMethod: z.string().min(24).max(24).optional(),
+  paymentChannel: z.enum(SALE_PAYMENT_CHANNELS).optional(),
   costTotal: z.number().nonnegative().optional(),
   total: z.number().nonnegative().optional(),
   discount: z.number().nonnegative().optional(),

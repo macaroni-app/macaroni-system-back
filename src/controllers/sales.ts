@@ -78,6 +78,7 @@ const salesController = {
     if (
       (req.body.isRetail === null || req.body.isRetail === undefined) ||
       (req.body.paymentMethod === null || req.body.paymentMethod === undefined) ||
+      (req.body.paymentChannel === null || req.body.paymentChannel === undefined) ||
       (req.body.client === null || req.body.client === undefined) ||
       (req.body.business === null || req.body.business === undefined) ||
       (req.body.costTotal === null || req.body.costTotal === undefined) ||

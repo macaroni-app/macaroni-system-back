@@ -36,6 +36,7 @@ export const salesService = {
       const sale = await Sale.findOne({ _id: id }) as SaleType
       sale.client = newSaleData?.client
       sale.paymentMethod = newSaleData?.paymentMethod
+      sale.paymentChannel = newSaleData?.paymentChannel
       sale.isRetail = newSaleData?.isRetail
       sale.orderRequest = newSaleData?.orderRequest
       sale.costTotal = newSaleData?.costTotal
