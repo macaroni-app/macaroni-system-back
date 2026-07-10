@@ -14,3 +14,4 @@ export const INVALID_PAYMENT_AMOUNT = 'No se puede guardar el pedido porque el n
 export const ORDER_REQUEST_HAS_PENDING_AMOUNT = 'El pedido todavía tiene saldo pendiente.'
 export const INVALID_PRODUCT_PRICE = 'El precio del producto es inválido.'
 export const INVALID_VARIANT_SELECTION = 'La selección de variantes del pedido o la venta es inválida.'
+export const DEFAULT_PAYMENT_METHOD_NOT_FOUND = 'No se encontró el método de pago Contado.'

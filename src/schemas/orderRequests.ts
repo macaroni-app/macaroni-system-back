@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+const SALE_PAYMENT_CHANNELS = ['CASH', 'BANK_TRANSFER', 'QR', 'CARD'] as const
+
 const ReservedOrderInventoryItemSchema = z.object({
   inventory: z.string().min(24).max(24),
   asset: z.string().min(24).max(24),
@@ -91,7 +93,7 @@ export const ConvertOrderRequestSchema = z.object({
   }),
   body: z.object({
     business: z.string().min(24).max(24).optional(),
-    paymentMethod: z.string().min(24).max(24),
+    paymentChannel: z.enum(SALE_PAYMENT_CHANNELS),
     discount: z.number().nonnegative().optional()
   })
 })

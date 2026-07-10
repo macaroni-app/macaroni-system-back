@@ -5,11 +5,12 @@ import { INSUFFICIENT_INVENTORY, INVALID_ORDER_REQUEST_STATUS, MISSING_FIELDS_RE
 import Asset from '../../models/assets'
 import Inventory from '../../models/inventories'
 import InventoryTransaction, { TransactionReason, TransactionType } from '../../models/inventoryTransactions'
+import MethodPayment from '../../models/paymentMethods'
 import OrderRequest, { OrderRequestPaymentStatus, OrderRequestStatus } from '../../models/orderRequests'
 import OrderRequestItem from '../../models/orderRequestItems'
 import Product from '../../models/products'
 import ProductItem from '../../models/productItems'
-import Sale from '../../models/sales'
+import Sale, { SalePaymentChannel } from '../../models/sales'
 import SaleItem from '../../models/saleItems'
 import { orderRequestWorkflowService } from '../orderRequestWorkflow'
 
@@ -83,6 +84,13 @@ const mockAssets = () => {
   ]) as never)
 }
 
+const mockDefaultPaymentMethod = () => {
+  vi.spyOn(MethodPayment, 'findOne').mockReturnValue(mockSessionQuery({
+    _id: 'cash-payment-method-id',
+    name: 'Contado'
+  }) as never)
+}
+
 const mockDraftReservationSources = () => {
   vi.spyOn(ProductItem, 'find').mockReturnValue(mockSessionQuery([
     {
@@ -120,7 +128,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     await expect(orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id' },
+      { paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )).rejects.toThrow(ORDER_REQUEST_ALREADY_CONVERTED)
 
@@ -138,7 +146,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     await expect(orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id' },
+      { paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )).rejects.toThrow(INVALID_ORDER_REQUEST_STATUS)
 
@@ -156,7 +164,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     await expect(orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id' },
+      { paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )).rejects.toThrow(ORDER_REQUEST_HAS_PENDING_AMOUNT)
 
@@ -172,10 +180,11 @@ describe('orderRequestWorkflowService.convertToSale', () => {
     vi.spyOn(mongoose, 'startSession').mockResolvedValue(session as never)
     mockOrderRequest(orderRequest)
     mockOrderItems()
+    mockDefaultPaymentMethod()
 
     await expect(orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id' },
+      { paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )).rejects.toThrow(MISSING_FIELDS_REQUIRED)
 
@@ -191,6 +200,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
     mockOrderItems()
     mockProducts()
     mockAssets()
+    mockDefaultPaymentMethod()
     const consumeInventory = vi.spyOn(Inventory, 'findOneAndUpdate').mockResolvedValue({
       quantityAvailable: 20
     } as never)
@@ -200,7 +210,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     const result = await orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id', discount: 10 },
+      { paymentChannel: SalePaymentChannel.BANK_TRANSFER, discount: 10 },
       'user-id'
     )
 
@@ -231,7 +241,8 @@ describe('orderRequestWorkflowService.convertToSale', () => {
         client: 'client-id',
         orderRequest: 'order-request-id',
         business: 'business-id',
-        paymentMethod: 'payment-method-id',
+        paymentMethod: 'cash-payment-method-id',
+        paymentChannel: SalePaymentChannel.BANK_TRANSFER,
         costTotal: 160,
         total: 500,
         discount: 10,
@@ -287,6 +298,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
     mockProducts()
     mockDraftReservationSources()
     mockAssets()
+    mockDefaultPaymentMethod()
     mockSuccessfulWrites()
     const consumeInventory = vi.spyOn(Inventory, 'findOneAndUpdate').mockResolvedValue({
       quantityAvailable: 20
@@ -294,7 +306,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     await orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { business: 'business-from-input-id', paymentMethod: 'payment-method-id' },
+      { business: 'business-from-input-id', paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )
 
@@ -320,6 +332,8 @@ describe('orderRequestWorkflowService.convertToSale', () => {
     expect(Sale.create).toHaveBeenCalledWith([
       expect.objectContaining({
         business: 'business-from-input-id',
+        paymentMethod: 'cash-payment-method-id',
+        paymentChannel: SalePaymentChannel.CASH,
         status: 'PAID'
       })
     ], { session })
@@ -335,6 +349,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
     mockOrderRequest(orderRequest)
     mockOrderItems()
     mockProducts()
+    mockDefaultPaymentMethod()
     vi.spyOn(Inventory, 'findOneAndUpdate').mockResolvedValue(null as never)
     const saleCreate = vi.spyOn(Sale, 'create')
     const saleItemInsertMany = vi.spyOn(SaleItem, 'insertMany')
@@ -342,7 +357,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     await expect(orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id' },
+      { paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )).rejects.toThrow(INSUFFICIENT_INVENTORY)
 
@@ -360,6 +375,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
     mockOrderRequest(orderRequest)
     mockOrderItems()
     mockProducts()
+    mockDefaultPaymentMethod()
     vi.spyOn(Inventory, 'findOneAndUpdate').mockResolvedValue({
       quantityAvailable: 20
     } as never)
@@ -370,7 +386,7 @@ describe('orderRequestWorkflowService.convertToSale', () => {
 
     await expect(orderRequestWorkflowService.convertToSale(
       'order-request-id',
-      { paymentMethod: 'payment-method-id' },
+      { paymentChannel: SalePaymentChannel.CASH },
       'user-id'
     )).rejects.toThrow(NOT_FOUND)
 

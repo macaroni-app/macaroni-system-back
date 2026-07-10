@@ -27,6 +27,7 @@ const buildRequest = (overrides: Record<string, unknown> = {}): Record<string, a
 const validSaleBody = {
   isRetail: true,
   paymentMethod: 'payment-method-id',
+  paymentChannel: 'CASH',
   client: 'client-id',
   business: 'business-id',
   costTotal: 100,

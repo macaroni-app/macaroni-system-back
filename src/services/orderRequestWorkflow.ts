@@ -3,13 +3,16 @@ import Asset, { IAsset } from '../models/assets'
 import AssetVariant, { IAssetVariant } from '../models/assetVariants'
 import Inventory from '../models/inventories'
 import InventoryTransaction, { TransactionReason, TransactionType } from '../models/inventoryTransactions'
+import MethodPayment from '../models/paymentMethods'
 import OrderRequest, { IOrderRequest, IOrderRequestPayment, OrderRequestPaymentStatus, OrderRequestStatus } from '../models/orderRequests'
 import OrderRequestItem, { IOrderRequestItem } from '../models/orderRequestItems'
 import Product, { IProduct } from '../models/products'
 import ProductItem, { IProductItem, ProductItemSelectionType } from '../models/productItems'
-import Sale from '../models/sales'
+import Sale, { SalePaymentChannel } from '../models/sales'
 import SaleItem from '../models/saleItems'
-import { INSUFFICIENT_INVENTORY, INVALID_ORDER_REQUEST_STATUS, INVALID_PAYMENT_AMOUNT, INVALID_VARIANT_SELECTION, MISSING_FIELDS_REQUIRED, NOT_FOUND, ORDER_REQUEST_ALREADY_CONVERTED, ORDER_REQUEST_HAS_NO_ITEMS, ORDER_REQUEST_HAS_PENDING_AMOUNT } from '../labels/labels'
+import { DEFAULT_PAYMENT_METHOD_NOT_FOUND, INSUFFICIENT_INVENTORY, INVALID_ORDER_REQUEST_STATUS, INVALID_PAYMENT_AMOUNT, INVALID_VARIANT_SELECTION, MISSING_FIELDS_REQUIRED, NOT_FOUND, ORDER_REQUEST_ALREADY_CONVERTED, ORDER_REQUEST_HAS_NO_ITEMS, ORDER_REQUEST_HAS_PENDING_AMOUNT } from '../labels/labels'
+
+type SalePaymentChannelInput = `${SalePaymentChannel}`
 
 interface ReservedInventoryItemType {
   inventory: string
@@ -20,7 +23,7 @@ interface ReservedInventoryItemType {
 
 interface ConvertOrderRequestInputType {
   business?: string
-  paymentMethod: string
+  paymentChannel: SalePaymentChannelInput
   discount?: number
 }
 
@@ -696,6 +699,16 @@ export const orderRequestWorkflowService = {
           throw new Error(MISSING_FIELDS_REQUIRED)
         }
 
+        const defaultPaymentMethod = await MethodPayment.findOne({
+          name: /^Contado$/i,
+          isDeleted: false,
+          isActive: true
+        }).session(session)
+
+        if (defaultPaymentMethod === null) {
+          throw new Error(DEFAULT_PAYMENT_METHOD_NOT_FOUND)
+        }
+
         const productIds = [...new Set(orderItems.map((item) => String(item.product)))]
         const products = await Product.find({ _id: { $in: productIds } }).session(session)
         const productById = new Map<string, IProduct>()
@@ -727,7 +740,8 @@ export const orderRequestWorkflowService = {
           client: String(orderRequest.client),
           orderRequest: orderRequest.id,
           business,
-          paymentMethod: convertInput.paymentMethod,
+          paymentMethod: String(defaultPaymentMethod._id),
+          paymentChannel: convertInput.paymentChannel,
           costTotal,
           total: Number(orderRequest.total),
           discount: convertInput.discount ?? Number(orderRequest.discount ?? 0),
